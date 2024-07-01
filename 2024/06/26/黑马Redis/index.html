@@ -1,13 +1,13 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>黑马Redis | Zy's Blog</title><meta name="author" content="炽热の秋冬"><meta name="copyright" content="炽热の秋冬"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="在此特别感谢黑马程序员Redis课程   黑马程序员Redis课程  内容概述 短信登录 通过Redis共享Session实现 在苍穹外卖项目中通过Json Web Token实现登录；黑马点评通过Redis共享session实现短-  -	信验证登录。   添加缓存 基于Redis实现给商户添加缓存，设置更新策略，满足读写一致 解决缓存中存在3大问题，缓存穿透、缓存雪崩、缓存击穿 对锁的理解">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>黑马Redis实战篇学习笔记 | Zy's Blog</title><meta name="author" content="炽热の秋冬"><meta name="copyright" content="炽热の秋冬"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="在此特别感谢黑马程序员Redis课程   黑马程序员的Redis课程  内容概述 短信登录  通过Redis共享Session实现 在苍穹外卖项目中通过Json Web Token实现登录；黑马点评通过Redis共享session实现短-  -	信验证登录。   添加缓存  基于Redis实现给商户添加缓存，设置更新策略，满足读写一致 解决缓存中存在3大问题，缓存穿透、缓存雪崩、缓存击穿 对锁">
 <meta property="og:type" content="article">
-<meta property="og:title" content="黑马Redis">
+<meta property="og:title" content="黑马Redis实战篇学习笔记">
 <meta property="og:url" content="https://chiredeqiudong.github.io/2024/06/26/%E9%BB%91%E9%A9%ACRedis/index.html">
 <meta property="og:site_name" content="Zy&#39;s Blog">
-<meta property="og:description" content="在此特别感谢黑马程序员Redis课程   黑马程序员Redis课程  内容概述 短信登录 通过Redis共享Session实现 在苍穹外卖项目中通过Json Web Token实现登录；黑马点评通过Redis共享session实现短-  -	信验证登录。   添加缓存 基于Redis实现给商户添加缓存，设置更新策略，满足读写一致 解决缓存中存在3大问题，缓存穿透、缓存雪崩、缓存击穿 对锁的理解">
+<meta property="og:description" content="在此特别感谢黑马程序员Redis课程   黑马程序员的Redis课程  内容概述 短信登录  通过Redis共享Session实现 在苍穹外卖项目中通过Json Web Token实现登录；黑马点评通过Redis共享session实现短-  -	信验证登录。   添加缓存  基于Redis实现给商户添加缓存，设置更新策略，满足读写一致 解决缓存中存在3大问题，缓存穿透、缓存雪崩、缓存击穿 对锁">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg">
 <meta property="article:published_time" content="2024-06-25T16:00:00.000Z">
-<meta property="article:modified_time" content="2024-06-26T16:20:27.726Z">
+<meta property="article:modified_time" content="2024-07-01T16:14:43.178Z">
 <meta property="article:author" content="炽热の秋冬">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://chiredeqiudong.github.io/2024/06/26/%E9%BB%91%E9%A9%ACRedis/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
@@ -50,12 +50,12 @@
   },
   autoDarkmode: false
 }</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
-  title: '黑马Redis',
+  title: '黑马Redis实战篇学习笔记',
   isPost: true,
   isHome: false,
   isHighlightShrink: false,
   isToc: true,
-  postUpdate: '2024-06-27 00:20:27'
+  postUpdate: '2024-07-02 00:14:43'
 }</script><script>(win=>{
       win.saveToLocal = {
         set: (key, value, ttl) => {
@@ -173,32 +173,36 @@
     document.addEventListener('pjax:send', () => { preloader.initLoading() })
     document.addEventListener('pjax:complete', () => { preloader.endLoading() })
   }
-})()</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://avatars.githubusercontent.com/u/153713561?v=4" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">2</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="Zy's Blog"><span class="site-name">Zy's Blog</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">黑马Redis</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-06-25T16:00:00.000Z" title="发表于 2024-06-26 00:00:00">2024-06-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-06-26T16:20:27.726Z" title="更新于 2024-06-27 00:20:27">2024-06-27</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="黑马Redis"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+})()</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://avatars.githubusercontent.com/u/153713561?v=4" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">2</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="Zy's Blog"><span class="site-name">Zy's Blog</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">黑马Redis实战篇学习笔记</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-06-25T16:00:00.000Z" title="发表于 2024-06-26 00:00:00">2024-06-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-07-01T16:14:43.178Z" title="更新于 2024-07-02 00:14:43">2024-07-02</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="黑马Redis实战篇学习笔记"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
 <p> 在此特别感谢黑马程序员Redis课程</p>
 </blockquote>
 <ul>
-<li><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1cr4y1671t?p=70&vd_source=7341c7fca3b496e9108bb1fd49c634ef">黑马程序员Redis课程</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1cr4y1671t?p=70&vd_source=7341c7fca3b496e9108bb1fd49c634ef">黑马程序员的Redis课程</a></li>
 </ul>
 <h1 id="内容概述"><a href="#内容概述" class="headerlink" title="内容概述"></a>内容概述</h1><ul>
-<li><em><strong>短信登录</strong></em><ul>
+<li><p><em><strong>短信登录</strong></em></p>
+<ul>
 <li>通过Redis共享Session实现</li>
 <li>在苍穹外卖项目中通过Json Web Token实现登录；黑马点评通过Redis共享session实现短-  -	信验证登录。</li>
 </ul>
 </li>
-<li><em><strong>添加缓存</strong></em><ul>
+<li><p><em><strong>添加缓存</strong></em></p>
+<ul>
 <li>基于Redis实现给商户添加缓存，设置更新策略，满足读写一致</li>
 <li>解决缓存中存在3大问题，缓存穿透、缓存雪崩、缓存击穿</li>
 <li>对锁的理解和线程池的创建&amp;使用（开启独立线程）</li>
 </ul>
 </li>
-<li><em><strong>优惠卷秒杀</strong></em><ul>
+<li><p><em><strong>优惠卷秒杀</strong></em></p>
+<ul>
 <li>基本优惠卷和秒杀优惠卷以及优惠卷订单的添加</li>
 <li>通过加乐观锁&amp;悲观锁的方式解决库存超卖问题</li>
 <li>通过加锁实现对单机状态下一人一单的细粒度控制</li>
 <li>集群环境下的并发问题分析</li>
 </ul>
 </li>
-<li><em><strong>分布式锁</strong></em><ul>
+<li><p><em><strong>分布式锁</strong></em></p>
+<ul>
 <li>分布式锁的实现，以及误删问题、获取、判断、删除锁的原子性问题</li>
 <li>线程标识解决误删问题、</li>
 <li>lua脚本解决原子性问题</li>
@@ -210,12 +214,450 @@
 </li>
 </ul>
 </li>
-<li><em><strong>秒杀优化</strong></em></li>
-<li><em><strong>Redis消息队列</strong></em></li>
-<li><em><strong>达人探店</strong></em></li>
-<li><em><strong>好友关注</strong></em></li>
-<li><em><strong>附近商铺</strong></em></li>
-<li><em><strong>用户签到</strong></em></li>
-<li><em><strong>UV统计</strong></em></li>
+<li><p><em><strong>秒杀优化</strong></em></p>
+<ul>
+<li>异步”秒杀”的思路分析</li>
+<li>基于lua脚本完成订单业务的判断</li>
+<li>通过阻塞对垒与独立线程处理订单异步任务完成下单</li>
 </ul>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://github.com/chiredeqiudong">炽热の秋冬</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://chiredeqiudong.github.io/2024/06/26/%E9%BB%91%E9%A9%ACRedis/">https://chiredeqiudong.github.io/2024/06/26/黑马Redis/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://chiredeqiudong.github.io" target="_blank">Zy's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.jpg" target="_blank"><img class="post-qr-code-img" src="/img/wechat.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2024/06/24/hello-world/" title="Hello World"><img class="cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Hello World</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://avatars.githubusercontent.com/u/153713561?v=4" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">炽热の秋冬</div><div class="author-info__description">明日复明日，明日何其多</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">2</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/chiredeqiudong" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:2939551471@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog！！！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%85%E5%AE%B9%E6%A6%82%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text">内容概述</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2024/06/26/%E9%BB%91%E9%A9%ACRedis/" title="黑马Redis"><img src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="黑马Redis"/></a><div class="content"><a class="title" href="/2024/06/26/%E9%BB%91%E9%A9%ACRedis/" title="黑马Redis">黑马Redis</a><time datetime="2024-06-25T16:00:00.000Z" title="发表于 2024-06-26 00:00:00">2024-06-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/24/hello-world/" title="Hello World"><img src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Hello World"/></a><div class="content"><a class="title" href="/2024/06/24/hello-world/" title="Hello World">Hello World</a><time datetime="2024-06-23T16:00:00.000Z" title="发表于 2024-06-24 00:00:00">2024-06-24</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2024 By 炽热の秋冬</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="/js/tw_cn.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script id="click-show-text" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/click-show-text.min.js" data-mobile="false" data-text="I,LOVE,YOU" data-fontsize="15px" data-random="true" async="async"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
+</li>
+<li><p><em><strong>Redis消息队列</strong></em></p>
+<ul>
+<li>认识什么是消息队列，市面上常用的消息中间件</li>
+<li>基于Redis的List、PubSub、Stream结构实现消息队列</li>
+<li>三种结构对实现消息队列的优缺点</li>
+<li>基于Stream结构的消费者组模式下实现多消费秒杀下单</li>
+</ul>
+</li>
+<li><p><em><strong>达人探店</strong></em></p>
+<ul>
+<li>如何基于云存储服务实现照片上传</li>
+<li>基于Redis的Set集合实现用户是否对某博文进行过点赞</li>
+<li>基于Redis的SortedSet集合实现用户是否对某博文进行过点赞，以及点赞用户通过时间先后排序</li>
+<li>了解MySQL的查询结果机制，实现给定顺序上传</li>
+</ul>
+</li>
+<li><p><em><strong>好友关注</strong></em></p>
+<ul>
+<li>多对多型表结构关系的建立</li>
+<li>基于SortedSet实现”交集”查询</li>
+<li>什么时Feed流，Feed流的实现方式</li>
+<li>SortedSet的ZREVRANGEBYSCORE命令，实现滚动分</li>
+</ul>
+</li>
+<li><p><em><strong>附近商铺</strong></em></p>
+</li>
+<li><p><em><strong>用户签到</strong></em></p>
+</li>
+<li><p><em><strong>UV统计</strong></em></p>
+</li>
+</ul>
+<hr>
+<h1 id="项目简介"><a href="#项目简介" class="headerlink" title="项目简介"></a>项目简介</h1><ul>
+<li>前后端分离开发</li>
+<li>前端通过Nginx服务器启动。<ul>
+<li>在“苍穹外卖”项目中同样是采用Nginx这种轻量的反向代理服务器。</li>
+<li>通过nignx的负载均衡能显著降低Tomcat服务器的压力。</li>
+</ul>
+</li>
+<li>该项目中对mysql的并发需求也会非常大，除了通过mysql集群外，也通过部署Redis集群来减轻对mysql的并发压力。</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2024/jpeg/40627369/1718442812109-2bc9c062-8f5c-4488-afe4-a87d4f775cae.jpeg#averageHue=%23faf8f8&clientId=ue3bdb45d-7328-4&from=paste&height=220&id=ueb85cfb1&originHeight=293&originWidth=750&originalType=binary&ratio=1.875&rotation=0&showTitle=false&size=18942&status=done&style=shadow&taskId=u5a4c5f1e-0807-4b76-8740-8d3f2b2917b&title=&width=562.0000305175781" alt="72207bbce1d55b31ca590021346cbbe7.jpg"></p>
+<h2 id="导入前端工程"><a href="#导入前端工程" class="headerlink" title="导入前端工程"></a>导入前端工程</h2><ol>
+<li><p>在黑马提供的资料中，找到<strong>Nginx包</strong>，把改包放到我们的workspace中。</p>
+<ol>
+<li>该workspace不能包含中文路径，不然nginx启动失败。</li>
+</ol>
+</li>
+<li><p>启动nginx，一闪而过说明启动成功。或者查看任务进程有无nginx</p>
+<ol>
+<li>访问<code>http://localhost:8080/</code>即可看到</li>
+</ol>
+</li>
+</ol>
+<img src="https://cdn.nlark.com/yuque/0/2024/png/40627369/1718443346025-55ce657a-65bd-4c1a-8091-3ebea66cc0ee.png#averageHue=%239c6c43&clientId=u74a10a4c-212d-4&from=paste&height=447&id=u5180acaf&originHeight=1194&originWidth=874&originalType=binary&ratio=1.875&rotation=0&showTitle=false&size=1387405&status=done&style=shadow&taskId=u20846854-d9f8-48cf-ab1c-fede67be00b&title=&width=327.13336181640625" alt="image.png" style="zoom: 33%;" />
+
+<h2 id="导入后端工程"><a href="#导入后端工程" class="headerlink" title="导入后端工程"></a>导入后端工程</h2><ol>
+<li>在黑马提供的资料中，找到<code>hm-dianping</code>项目导入</li>
+<li>启动项目，在浏览器中访问<code>http://localhost:8081/shop-type/list</code>,如果出现json数据，代表成功。</li>
+<li>示例</li>
+</ol>
+<img src="https://cdn.nlark.com/yuque/0/2024/png/40627369/1718443146828-639af4b7-08b7-445c-9221-9585afd8a230.png#averageHue=%231a1a1d&clientId=ue3bdb45d-7328-4&from=paste&height=549&id=ub866fdd2&originHeight=1154&originWidth=768&originalType=binary&ratio=1.875&rotation=0&showTitle=false&size=61426&status=done&style=shadow&taskId=u5e3ef57f-1211-44ee-82ee-c9d6edbf8e2&title=&width=365.60003662109375" alt="image.png" style="zoom: 33%;" />
+
+<h2 id="数据库搭建"><a href="#数据库搭建" class="headerlink" title="数据库搭建"></a>数据库搭建</h2><h3 id="表结构说明"><a href="#表结构说明" class="headerlink" title="表结构说明"></a>表结构说明</h3><ul>
+<li>导入黑马资料中的sql文件完成数据库的建表</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">表</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">tb_user</td>
+<td align="center">用户表</td>
+</tr>
+<tr>
+<td align="center">tb_user_info</td>
+<td align="center">用户详情表</td>
+</tr>
+<tr>
+<td align="center">tb_shop</td>
+<td align="center">商户信息表</td>
+</tr>
+<tr>
+<td align="center">tb_shop_type</td>
+<td align="center">商户类型表</td>
+</tr>
+<tr>
+<td align="center">tb_blog</td>
+<td align="center">用户日记表（达人探店日记)</td>
+</tr>
+<tr>
+<td align="center">tb_follow</td>
+<td align="center">用户关注表</td>
+</tr>
+<tr>
+<td align="center">tb_voucher</td>
+<td align="center">优惠券表</td>
+</tr>
+<tr>
+<td align="center">tb_voucher_order</td>
+<td align="center">优惠券的订单表</td>
+</tr>
+</tbody></table>
+<h3 id="字符集-排序字符集"><a href="#字符集-排序字符集" class="headerlink" title="字符集&amp;排序字符集"></a>字符集&amp;排序字符集</h3><ul>
+<li>字符集是<code>utf8mb4</code></li>
+<li><ul>
+<li>在MySQL中保留四字节长度的<code>utf-8</code>编码的字符，兼容性更好（与utf-8相比），空间占用比utf-8稍大，mysql官方建议使用varchar代替char使用</li>
+<li>详细请看<code>https://blog.csdn.net/munangs/article/details/126617226</code></li>
+</ul>
+</li>
+<li>排序字符集是<code>utf8mb4_general_ci</code></li>
+<li><ul>
+<li>推荐使用 <code>utf8mb4_0900_ai_ci</code> 作为默认排序字符集；<code>utf8mb4_general_ci</code>在比较和排序的性能上都还行， 但是没有实现 <strong>Unicode</strong> 排序规则，在遇到某些特殊语言或者字符集，排序结果可能不一致</li>
+</ul>
+</li>
+</ul>
+<h2 id="Redis搭建"><a href="#Redis搭建" class="headerlink" title="Redis搭建"></a>Redis搭建</h2><ol>
+<li>配置信息</li>
+</ol>
+<ul>
+<li><pre><code class="yaml"># ==redis==
+redis:
+  host: localhost
+  port: 6379
+  database: 0
+  lettuce:
+    pool:
+      max-active: 10
+      max-idle: 10
+      min-idle: 1
+      time-between-eviction-runs: 10s
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">2. 选择</span><br><span class="line">   1. 由于是个人操作，直接使用**Windows**版的**Redis**</span><br><span class="line">   2. 在”苍穹外卖“中使用的是RedisTemplate，然后配置**字符串序列化器**；而这里的StringRedisTemplate继承RedisTemplate且默认序列化器就是**字符串序列化器**，因此之后直接装配StringRedisTemplate使用即可</span><br><span class="line">   3. RedisTemplate 和 StringRedisTemplate区别</span><br><span class="line">      1. 详情看`https://blog.csdn.net/zhanyu1/article/details/90760226`</span><br><span class="line"></span><br><span class="line">----</span><br><span class="line"></span><br><span class="line"># 短信登录</span><br><span class="line"></span><br><span class="line">## 基于Session的登录流程</span><br><span class="line"></span><br><span class="line">1. 通过接收到的手机号发送验证码</span><br><span class="line">2. 短信验证码登录、注册</span><br><span class="line">3. 校验登录状态</span><br><span class="line"></span><br><span class="line">### 发送验证码实现</span><br><span class="line"></span><br><span class="line">1. 查看前后端请求接口和传输对象</span><br><span class="line"></span><br><span class="line">1. 1. Post请求，路径为`/user/code`</span><br><span class="line">   2. 请求参数为`String phone, HttpSession session`</span><br><span class="line"></span><br><span class="line">2. 电话号码规范校验</span><br><span class="line"></span><br><span class="line">4. 1. 这里通过工具类`RegexUtils`和`RegexPatterns`常量类做正则判断</span><br><span class="line"></span><br><span class="line">   2. ```java</span><br><span class="line">      //手机号正则</span><br><span class="line">      public static final String PHONE_REGEX = &quot;^1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[89])\\d&#123;8&#125;$&quot;;</span><br><span class="line">      /**</span><br><span class="line">       * 是否是无效手机格式</span><br><span class="line">       * @param phone 要校验的手机号</span><br><span class="line">       * @return true:符合，false：不符合</span><br><span class="line">       */</span><br><span class="line">      public static boolean isPhoneInvalid(String phone)&#123;</span><br><span class="line">          return mismatch(phone, RegexPatterns.PHONE_REGEX);</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
+
+ 3. 生成验证码
+
+    1. 黑马使用的是一个随机数工具类，生成6位的数字随机数。
+
+    2. `RandomUtil`工具类
+
+       1. ```xml
+          &lt;!--依赖--&gt;
+          &lt;dependency&gt;
+              &lt;groupId&gt;cn.hutool&lt;/groupId&gt;
+              &lt;artifactId&gt;hutool-all&lt;/artifactId&gt;
+              &lt;version&gt;5.7.17&lt;/version&gt;
+          &lt;/dependency&gt;
+          <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">4. 保存验证码到session中</span><br><span class="line"></span><br><span class="line">5. 发送验证码</span><br><span class="line"></span><br><span class="line">6. 具体service层代码实现</span><br><span class="line"></span><br><span class="line">   1. 代码逻辑</span><br><span class="line"></span><br><span class="line">      - 手机号校验</span><br><span class="line">        - 错误，返回错误信息</span><br><span class="line">        - 正确，生成6位数字验证码</span><br><span class="line"></span><br><span class="line">   2. 没有短信服务接口，直接输出到控制台查看</span><br><span class="line"></span><br><span class="line">   3. 保存到`session`域中</span><br><span class="line"></span><br><span class="line">   4. ```java</span><br><span class="line">      //发送验证码</span><br><span class="line">      public Result sendCode(String phone, HttpSession session) &#123;</span><br><span class="line">          boolean isInvalid = RegexUtils.isPhoneInvalid(phone);</span><br><span class="line">          if (isInvalid)&#123;</span><br><span class="line">              return Result.fail(MessageConstants.PHONE_ERROR);</span><br><span class="line">          &#125;</span><br><span class="line">          String yzm = RandomUtil.randomNumbers(6);</span><br><span class="line">          session.setAttribute(&quot;code&quot;,yzm);</span><br><span class="line">          log.info(&quot;yzm:&#123;&#125;&quot;,yzm);</span><br><span class="line">          return Result.ok();</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
+</code></pre>
+</li>
+</ul>
+<h3 id="短信登录实现"><a href="#短信登录实现" class="headerlink" title="短信登录实现"></a>短信登录实现</h3><ol>
+<li><p>查看前后端请求接口和传输对象</p>
+</li>
+<li><p>Post请求路径为<code>/user/login</code></p>
+<ol>
+<li><p>请求参数为<code>LoginFormDTO loginForm, HttpSession session</code></p>
+</li>
+<li><p>查看<code>LoginFormDTO </code>的组成结构</p>
+</li>
+<li><pre><code class="java">public class LoginFormDTO &#123;
+    //电话
+    private String phone; 
+    //输入的验证码
+    private String code;
+    //密码
+    private String password;
+&#125;
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">1. 实现逻辑</span><br><span class="line"></span><br><span class="line">   1. 校验手机号是否有效</span><br><span class="line">      1. 无效，返回错误信息</span><br><span class="line">      1. 有效，判断手机号是否一致</span><br><span class="line">         1. 不一致，返回错误信息</span><br><span class="line">         2. 一致，通过获取`session`域中yzm进行校验	</span><br><span class="line">            1. 错误，返回错误信息</span><br><span class="line">            2. 正确，根据手机号在数据库中查询用户</span><br><span class="line">               1. 用户存在，保存用户到session</span><br><span class="line">               2. 用户不存在，创建新用户，保存数据库中</span><br><span class="line">      1. 创建新用户</span><br><span class="line">         1. 对User实体类创建一个实现方法</span><br><span class="line">         1. 根据电话号码和`IdGenerator`构建一个`User`实体</span><br><span class="line">         1. 保存数据库</span><br><span class="line">         1. 保存到`session`</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">4. 具体service层代码实现</span><br><span class="line"></span><br><span class="line">   1. ```java</span><br><span class="line">      public Result login(LoginFormDTO loginForm, HttpSession session) &#123;</span><br><span class="line">          boolean isInvalid = RegexUtils.isPhoneInvalid(loginForm.getPhone());</span><br><span class="line">          if (isInvalid)&#123;</span><br><span class="line">              return Result.fail(MessageConstants.PHONE_ERROR);</span><br><span class="line">          &#125;</span><br><span class="line">          String cacheCode = session.getAttribute(&quot;code&quot;).toString();    </span><br><span class="line">          if (!loginForm.getCode().equals(yzm))&#123;</span><br><span class="line">              return Result.fail(MessageConstants.CODE_ERROR);</span><br><span class="line">          &#125;</span><br><span class="line">          User user = userMapper.getByPhone(loginForm.getPhone());</span><br><span class="line">          if (user != null)&#123;</span><br><span class="line">              session.setAttribute(&quot;user&quot;,user);</span><br><span class="line">              return Result.ok();</span><br><span class="line">          &#125;</span><br><span class="line">          User newUser = createUserWithPhone(loginForm.getPhone());</span><br><span class="line">          int row = userMapper.insert(newUser);</span><br><span class="line">          if (row != 1)&#123;</span><br><span class="line">              return Result.fail(MessageConstants.NEW_USER_ERROR);</span><br><span class="line">          &#125;</span><br><span class="line">          session.setAttribute(&quot;user&quot;,newUser);</span><br><span class="line">          return Result.ok();</span><br><span class="line">      &#125;</span><br><span class="line">      /**</span><br><span class="line">       * 通过电话号码创建用户</span><br><span class="line">       * @param phone</span><br><span class="line">       * @return</span><br><span class="line">       */</span><br><span class="line">      private User createUserWithPhone(String phone) &#123;</span><br><span class="line">          User user = new User();</span><br><span class="line">          user.setPhone(phone);</span><br><span class="line">          user.setId(YitIdHelper.nextId());</span><br><span class="line">          user.setCreateTime(LocalDateTime.now());</span><br><span class="line">          user.setUpdateTime(LocalDateTime.now());</span><br><span class="line">          //名称采用的是RandomUtil的随机字符串</span><br><span class="line">          user.setNickName(SystemConstants.USER_NICK_NAME_PREFIX + RandomUtil.randomString(10));</span><br><span class="line">          return user;</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
+</code></pre>
+</li>
+</ol>
+</li>
+<li><p>这里的主键生成策略采用<strong>雪花算法id</strong>生成</p>
+<ul>
+<li><p>配置</p>
+<ul>
+<li><pre><code class="xml">&lt;dependency&gt;
+    &lt;groupId&gt;com.github.yitter&lt;/groupId&gt;
+    &lt;artifactId&gt;yitter-idgenerator&lt;/artifactId&gt;
+    &lt;version&gt;1.0.6&lt;/version&gt;
+&lt;/dependency&gt;
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">- 配置详情见官网</span><br><span class="line"></span><br><span class="line">  - `https://github.com/yitter/idgenerator/tree/master/Java`</span><br><span class="line"></span><br><span class="line">- ```java</span><br><span class="line">  //初始化</span><br><span class="line">  @Component</span><br><span class="line">  public class IdGeneratorUtil &#123;</span><br><span class="line">  </span><br><span class="line">      //全局 初始化（应用程序启动时执行一次）</span><br><span class="line">      static &#123;</span><br><span class="line">          // 创建 IdGeneratorOptions 对象，可在构造函数中输入 WorkerId(默认为0)</span><br><span class="line">          IdGeneratorOptions options = new IdGeneratorOptions();</span><br><span class="line">          // 保存参数（务必调用，否则参数设置不生效）：</span><br><span class="line">          YitIdHelper.setIdGenerator(options);</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>流程图</p>
+</li>
+<li><p><img src="https://cdn.nlark.com/yuque/0/2024/png/40627369/1718443758967-7d399620-ec37-4a79-a654-46f90593e61a.png" alt="img"></p>
+</li>
+</ol>
+<p>		</p>
+<h2 id="登录拦截"><a href="#登录拦截" class="headerlink" title="登录拦截"></a>登录拦截</h2><h3 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h3><ul>
+<li>为什么需要登录拦截器？</li>
+</ul>
+<ol>
+<li><ol>
+<li>一般来说，只有静态、登录和注册页面是用户可以直接<code>url</code>访问的。其他一切的<code>url</code>都需要被拦截，进行判断</li>
+<li>简单来说，就是防止用户不登录就访问系统资源</li>
+</ol>
+</li>
+</ol>
+<ul>
+<li>登录拦截器的业务实现原理？</li>
+</ul>
+<ol>
+<li><ol>
+<li>在被拦截的请求中查看session域里是否有用户的登录数据（基于Session实现）</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>在”苍穹外卖“中是通过请求头获取登录令牌来判断用户是否登录。</li>
+</ol>
+</li>
+</ol>
+<h3 id="黑马提供的Tomcat的运行原理"><a href="#黑马提供的Tomcat的运行原理" class="headerlink" title="黑马提供的Tomcat的运行原理"></a>黑马提供的Tomcat的运行原理</h3><ol>
+<li><p>运行原理图</p>
+</li>
+<li><img src="https://cdn.nlark.com/yuque/0/2024/png/40627369/1718521809877-6d3c60f1-6858-4ec0-b79c-a764c5f15cb4.png" alt="img" style="zoom: 67%;" />
+</li>
+<li><p>示例</p>
+<ol>
+<li>当用户发起请求时，会访问我们向<code>tomcat</code>注册的<strong>端口</strong>，任何程序想要运行，都需要有一个线程对当前端口号进行<strong>监听</strong>，<code>tomcat</code>也不例外</li>
+<li>当监听线程知道用户想要和<code>tomcat</code>连接时，会由监听线程创建<code>socket</code>连接</li>
+<li><code>socket</code>都是成对出现的，用户通过<code>socket</code>互相传递数据，当<code>tomcat</code>端的<code>socket</code>接受到数据后，此时监听线程会从<code>tomcat</code>的线程池中取出一个线程执行用户请求</li>
+<li>在我们的服务部署到<code>tomcat</code>后，线程会找到用户想要访问的工程，然后用这个线程转发到工程中的<code>controller</code>，<code>service</code>，<code>dao</code>中，并且访问对应的<code>DataBase</code></li>
+<li>在用户执行完请求后，再统一返回，再找到<code>tomcat</code>端的<code>socket</code>，再将数据写回到用户端的<code>socket</code>，完成请求和响应</li>
+</ol>
+</li>
+<li><p>通过以上讲解，可以得知 <strong>每个用户其实都是去tomcat线程池中找的一个线程来完成工作</strong>， 使用完成后再进行回收，既然每个请求都是独立(每一个线程都不一致)的，所以在每个用户去访问我们的工程时，我们可以使用<code>threadlocal</code>来做到<strong>线程隔离</strong>，即每个线程只操作自己的一份数据</p>
+</li>
+</ol>
+<h3 id="ThreadLocal"><a href="#ThreadLocal" class="headerlink" title="ThreadLocal"></a>ThreadLocal</h3><ol>
+<li>通过<code>threadLocal</code>的源码，会发现在<code>threadLocal</code>中，无论是他的<code>put()</code>方法和他的<code>get()</code>方法，都是先获得当前用户的线程，然后从线程中取出线程的成员变量<code>map</code>，只要线程不一样，<code>map</code>就不一样，所以可以通过这种方式来做到<strong>线程隔离</strong></li>
+<li>源码：</li>
+<li><img src="https://cdn.nlark.com/yuque/0/2024/png/40627369/1718522238024-5909480a-fd4c-4c18-988b-539e99b2399a.png" alt="img" style="zoom:50%;" /></li>
+</ol>
+<h3 id="Session共享问题"><a href="#Session共享问题" class="headerlink" title="Session共享问题"></a>Session共享问题</h3><ul>
+<li><p>核心思路分析</p>
+<ul>
+<li><p>每个<code>tomcat</code>中都有一份属于自己的<code>session</code>,假设用户第一次访问第一台<code>tomcat</code>，并且把自己的信息存放到第一台服务器的<code>session</code>中</p>
+</li>
+<li><p>但是第二次，这个用户访问到了第二台<code>tomcat</code>，那么在第二台服务器上，肯定没有第一台服务器存放的<code>session</code></p>
+</li>
+<li><p>所以此时整个登录拦截功能就会出现问题</p>
+</li>
+</ul>
+</li>
+<li><p>如何解决这个问题呢？</p>
+<ul>
+<li>早期的方案是<strong>session拷贝</strong>，就是说虽然每个<code>tomcat</code>上都有不同的<code>session</code>，但是每当任意一台服务器的<code>session</code>修改时，都会<strong>同步</strong>给其他的Tomcat服务器的<code>session</code>，这样的话，就可以实现session的共享</li>
+</ul>
+</li>
+<li><p>但是这种方案具有两个大问题</p>
+<ol>
+<li>每台服务器中都需要完整的一份session数据，服务器压力过大。</li>
+<li>session拷贝数据时，可能会出现延迟</li>
+<li>所以这里采用的方案是基于<strong>Redis</strong>来完成，Redis数据本身就是共享的，这样就可以避免session共享的问题</li>
+</ol>
+</li>
+<li><p>这样的实现就需要对登录&amp;注册功能代码，进行一定修改，把用户数据User直接缓存到redis中</p>
+</li>
+<li><p>在session中保存用户数据，如果浏览器信息被截取的话，会存在重要信息泄露问题</p>
+<ul>
+<li>因此黑马会有<code>UserDTO</code>类来对用户数据进行隐藏</li>
+<li>不过在<strong>Redis</strong>中不会存在这些问题，但为了安全，还是需要对缓存的用户数据进行隐藏</li>
+</ul>
+</li>
+</ul>
+<h3 id="Redis的设计"><a href="#Redis的设计" class="headerlink" title="Redis的设计"></a>Redis的设计</h3><ol>
+<li><p>使用Redis，不可避免的需要考虑key和value的设计。</p>
+</li>
+<li><p>KEY需要满足</p>
+<ol>
+<li>唯一性</li>
+<li>非敏感性</li>
+</ol>
+</li>
+<li><p>Value则需要考虑使用何种数据结构缓存<code>User</code>实体数据</p>
+<ol>
+<li>直接字符串，以Json形式存储</li>
+<li>Hash结构，key-field-value形式</li>
+</ol>
+</li>
+<li><p><img src="https://cdn.nlark.com/yuque/0/2024/png/40627369/1718524532627-76fd5f7a-8ec6-4a61-b1ad-45b9e7e027a6.png" alt="img"></p>
+</li>
+<li><p>选择</p>
+<ol>
+<li>KEY通过<code>IdGeneratorUtill</code>工具类随机生成token即可，前端携带这个token访问</li>
+<li>因为<code>User</code>数据已经被隐藏，以及不会通过Redis对其中的个别数据查看，因此选择String类型以Json形式存储</li>
+</ol>
+</li>
+</ol>
+<h3 id="基于Redis实现登录"><a href="#基于Redis实现登录" class="headerlink" title="基于Redis实现登录"></a>基于Redis实现登录</h3><ol>
+<li><p>通过token做登录令牌，30分钟的有效期</p>
+</li>
+<li><p>将<code>UserDto</code>转为Json字符串</p>
+</li>
+<li><p>返回token</p>
+</li>
+<li><p>由于只是对<code>session</code>的功能修改，其他不做太大改变，因此直接贴代码</p>
+</li>
+<li><pre><code class="java">//发送验证码
+public Result sendCode(String phone, HttpSession session) &#123;
+    boolean isInvalid = RegexUtils.isPhoneInvalid(phone);
+    if (isInvalid)&#123;
+        return Result.fail(MessageConstants.PHONE_ERROR);
+    &#125;
+    String yzm = RandomUtil.randomNumbers(6);
+    stringRedisTemplate.opsForValue().set(RedisConstants.LOGIN_CODE_KEY+phone,yzm,1, TimeUnit.MINUTES);
+    log.info(&quot;yzm:&#123;&#125;&quot;,yzm);
+    return Result.ok();
+&#125;
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">6. ```java</span><br><span class="line">   //登录</span><br><span class="line">   public Result login(LoginFormDTO loginForm, HttpSession session) &#123;</span><br><span class="line">       boolean isInvalid = RegexUtils.isPhoneInvalid(loginForm.getPhone());</span><br><span class="line">       if (isInvalid)&#123;</span><br><span class="line">           return Result.fail(MessageConstants.PHONE_ERROR);</span><br><span class="line">       &#125;</span><br><span class="line">       String yzm = stringRedisTemplate.opsForValue()</span><br><span class="line">           .get(RedisConstants.LOGIN_CODE_KEY + loginForm.getPhone());</span><br><span class="line">       if (!loginForm.getCode().equals(yzm))&#123;</span><br><span class="line">           return Result.fail(MessageConstants.CODE_ERROR);</span><br><span class="line">       &#125;</span><br><span class="line">       User user = userMapper.getByPhone(loginForm.getPhone());</span><br><span class="line">       UserDTO userDTO = new UserDTO();</span><br><span class="line">       if (user != null)&#123;</span><br><span class="line">       long token = YitIdHelper.nextId();</span><br><span class="line">       BeanUtils.copyProperties(user,userDTO);</span><br><span class="line">       String userDtoStr = JSONUtil.toJsonStr(userDTO);</span><br><span class="line">             	 stringRedisTemplate.opsForValue().set(RedisConstants.LOGIN_USER_KEY+token,</span><br><span class="line">                userDtoStr,RedisConstants.LOGIN_USER_TTL,TimeUnit.MINUTES);</span><br><span class="line">       	return Result.ok(token);</span><br><span class="line">       &#125;</span><br><span class="line">       User newUser = createUserWithPhone(loginForm.getPhone());</span><br><span class="line">       int row = userMapper.insert(newUser);</span><br><span class="line">       if (row != 1)&#123;</span><br><span class="line">           return Result.fail(MessageConstants.NEW_USER_ERROR);</span><br><span class="line">       &#125;</span><br><span class="line">       long token = YitIdHelper.nextId();</span><br><span class="line">   	BeanUtils.copyProperties(newUser,userDTO);</span><br><span class="line">   	String userDtoStr = JSONUtil.toJsonStr(userDTO);</span><br><span class="line">   	stringRedisTemplate.opsForValue().set(RedisConstants.LOGIN_USER_KEY+token,userDtoStr</span><br><span class="line">       		,RedisConstants.LOGIN_USER_TTL,TimeUnit.MINUTES);</span><br><span class="line">    	return Result.ok(token);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">7. ![img](https://cdn.nlark.com/yuque/0/2024/png/40627369/1718526315934-d827007e-c3ed-495d-89d4-8d1860c96b7f.png)</span><br><span class="line"></span><br><span class="line">### 实现登录拦截器</span><br><span class="line"></span><br><span class="line">1. 代码逻辑</span><br><span class="line"></span><br><span class="line">   1. 从请求头中获取`token`</span><br><span class="line">   1. 根据`token`从**Redis**中获取用户数据</span><br><span class="line">      1. 失败，设置响应状态码401（拦截）</span><br><span class="line">      1. 成功，保存用户到threadlocal中</span><br><span class="line">         1. 刷新`token`的缓存时间</span><br><span class="line">         1. 放行</span><br><span class="line"></span><br><span class="line">1. 具体代码</span><br><span class="line"></span><br><span class="line">   1. ```java</span><br><span class="line">      //登录拦截器</span><br><span class="line">      @Component</span><br><span class="line">      public class LoginInterceptor implements HandlerInterceptor &#123;</span><br><span class="line">          @Resource</span><br><span class="line">          private StringRedisTemplate stringRedisTemplate;</span><br><span class="line">          </span><br><span class="line">          @Override</span><br><span class="line">          public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object 	  handler) throws Exception &#123;</span><br><span class="line">              String token = request.getHeader(&quot;authorization&quot;);</span><br><span class="line">              String userDtoStr = stringRedisTemplate.opsForValue()</span><br><span class="line">                  .get(RedisConstants.LOGIN_USER_KEY + token);</span><br><span class="line">              if (userDtoStr == null )&#123;</span><br><span class="line">                  response.setStatus(401);</span><br><span class="line">                  return false;</span><br><span class="line">              &#125;</span><br><span class="line">              UserDTO userDTO = JSONUtil.toBean(userDtoStr,UserDTO.class);</span><br><span class="line">              if (userDTO == null)&#123;</span><br><span class="line">                  response.setStatus(401);</span><br><span class="line">                  return false;</span><br><span class="line">              &#125;</span><br><span class="line">             	UserHolder.saveUser(userDTO);</span><br><span class="line">       	    stringRedisTemplate.expire(RedisConstants.LOGIN_USER_KEY+token,</span><br><span class="line">                                     RedisConstants.LOGIN_USER_TTL, TimeUnit.MINUTES);</span><br><span class="line">              return true;</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
+</code></pre>
+</li>
+<li><p>添加拦截器</p>
+<ul>
+<li><p>设置拦截路径和放行路径；这里直接粘贴黑马的代码即可</p>
+</li>
+<li><pre><code class="java"> @Component
+ @Slf4j
+ public class WebMvcConfiguration extends WebMvcConfigurationSupport &#123;
+ 
+     @Resource
+     private LoginInterceptor loginInterceptor;
+ 
+     @Override
+     protected void addInterceptors(InterceptorRegistry registry) &#123;
+         log.info(&quot;LoginInterceptor拦截器.....&quot;);
+         registry.addInterceptor(loginInterceptor)
+                 .addPathPatterns(&quot;/**&quot;)
+                 .excludePathPatterns(
+                         &quot;/shop/**&quot;,
+                         &quot;/voucher/**&quot;,
+                         &quot;/shop-type/**&quot;,
+                         &quot;/upload/**&quot;,
+                         &quot;/blog/hot&quot;,
+                         &quot;/user/code&quot;,
+                         &quot;/user/login&quot;
+                 );
+     &#125;
+ &#125;
+ <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">### 实现状态登录刷新</span><br><span class="line"></span><br><span class="line">1. 问题</span><br><span class="line"></span><br><span class="line">   - 登录拦截器只是拦截了需要拦截的路径（url）；如果用户访问不被拦截的`url`超过30min以上`token`还是会过期</span><br><span class="line"></span><br><span class="line">2. 解决</span><br><span class="line"></span><br><span class="line">   - 我们需要一个拦截器专门用来处理令牌刷新问题，至于是否**Redis**缓存用户数据则放行至下一个拦截器处理</span><br><span class="line">   - 令牌刷新拦截器需要对所有请求进行拦截</span><br><span class="line"></span><br><span class="line">3. 实现逻辑</span><br><span class="line"></span><br><span class="line">   1. 第一个拦截器</span><br><span class="line"></span><br><span class="line">   2. 从请求头中获取`token`</span><br><span class="line"></span><br><span class="line">      1. 不存在，放行（可能是登录）</span><br><span class="line">      2. 存在，从Redis中获取用户数据</span><br><span class="line">         1. 不存在，放行（toke过期）</span><br><span class="line">         2. 存在，保存用户数据到`threadlocal`中</span><br><span class="line">            1. 刷新token有效期</span><br><span class="line">            2. 放行</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">      3. 在请求完成后移除用户</span><br><span class="line">         1. `afterCompletion`方法中调用`UserHolder.removeUser();`即可</span><br><span class="line"></span><br><span class="line">   3. 第二个拦截器</span><br><span class="line"></span><br><span class="line">      1. 直接判断`threadlocal`中是否存在用户数据</span><br><span class="line">         1. 不存在，响应401，拦截</span><br><span class="line">         2. 存在，放行</span><br><span class="line"></span><br><span class="line">      2. 在请求完成后移除用户</span><br><span class="line">         1. 在`afterCompletion`方法中`UserHolder.removeUser();`即可</span><br><span class="line"></span><br><span class="line">4. 我们重启服务器，登录，然后去Redis的图形化界面查看`token`的`ttl`，如果每次切换界面之后，`ttl`都会重置，说明代码没有问题  </span><br><span class="line"></span><br><span class="line">5. 实现代码</span><br><span class="line"></span><br><span class="line">   1. ```java</span><br><span class="line">      //令牌刷新拦截器</span><br><span class="line">      @Component</span><br><span class="line">      public class TokenRefeshInterceptor implements HandlerInterceptor &#123;</span><br><span class="line">          @Resource</span><br><span class="line">          private StringRedisTemplate stringRedisTemplate;</span><br><span class="line">          @Override</span><br><span class="line">          public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception &#123;</span><br><span class="line">              String token = request.getHeader(&quot;authorization&quot;);</span><br><span class="line">              if (token == null)&#123;</span><br><span class="line">                  return true;</span><br><span class="line">              &#125;</span><br><span class="line">              String userDtoStr = stringRedisTemplate.opsForValue()</span><br><span class="line">                  .get(RedisConstants.LOGIN_USER_KEY + token);</span><br><span class="line">              if (userDtoStr == null)&#123;</span><br><span class="line">                  return true;</span><br><span class="line">              &#125;</span><br><span class="line">              UserDTO userDTO = JSONUtil.toBean(userDtoStr, UserDTO.class);</span><br><span class="line">              if (userDTO == null)&#123;</span><br><span class="line">                  return true;</span><br><span class="line">              &#125;</span><br><span class="line">              UserHolder.saveUser(userDTO);</span><br><span class="line">              stringRedisTemplate.expire(RedisConstants.LOGIN_USER_KEY+token,</span><br><span class="line">                                         RedisConstants.LOGIN_USER_TTL, TimeUnit.MINUTES);</span><br><span class="line">              return true;</span><br><span class="line">          &#125;</span><br><span class="line">      </span><br><span class="line">          @Override</span><br><span class="line">          public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception &#123;</span><br><span class="line">              UserHolder.removeUser();</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
+</code></pre>
+</li>
+</ul>
+<ol start="2">
+<li><pre><code class="java">//添加拦截器
+@Component
+@Slf4j
+public class WebMvcConfiguration extends WebMvcConfigurationSupport &#123;
+
+    @Resource
+    private LoginInterceptor loginInterceptor;
+    @Resource
+    private TokenRefeshInterceptor tokenRefeshInterceptor;
+
+    @Override
+    protected void addInterceptors(InterceptorRegistry registry) &#123;
+        log.info(&quot;Interceptor拦截器.....&quot;);
+        registry.addInterceptor(tokenRefeshInterceptor)
+                        .addPathPatterns(&quot;/**&quot;).order(0);
+        registry.addInterceptor(loginInterceptor)
+                .excludePathPatterns(
+                        &quot;/shop/**&quot;,
+                        &quot;/voucher/**&quot;,
+                        &quot;/shop-type/**&quot;,
+                        &quot;/upload/**&quot;,
+                        &quot;/blog/hot&quot;,
+                        &quot;/user/code&quot;,
+                        &quot;/user/login&quot;
+                ).order(1);
+    &#125;
+&#125;
+</code></pre>
+</li>
+</ol>
+</li>
+<li><p>流程图<img src="https://cdn.nlark.com/yuque/0/2024/png/40627369/1718530012473-4e26c5b2-af7d-4bcb-8347-5aae72b2c174.png" alt="img"></p>
+</li>
+<li><p>拦截器实现原理图（回忆知识）</p>
+<ol>
+<li>参考别人博客<code>https://cyborg2077.github.io/2022/09/10/SSMIntegration/</code></li>
+<li><img src="https://cdn.nlark.com/yuque/0/2024/jpeg/40627369/1718552697599-5266b226-8396-477b-acf9-aa4fe9f00bfe.jpeg" alt="img"></li>
+</ol>
+</li>
+<li><p>实现流程</p>
+<ol>
+<li><p>浏览器发送一个请求，会先到<code>Tomcat</code>服务器的web服务器</p>
+</li>
+<li><p><code>Tomcat</code>服务器接收到请求后，会先去判断请求的是静态资源还是动态资源</p>
+</li>
+<li><p>如果是静态资源，会直接到<code>Tomcat</code>的项目部署目录下直接访问</p>
+</li>
+<li><p>如果是动态资源，就需要交给项目的后台代码进行处理</p>
+</li>
+<li><p>在找到具体的方法之前，我们可以去配置<strong>过滤器</strong>（可以配置多个），按照顺序进行执行（在这里就可以进行权限校验）</p>
+</li>
+<li><p>然后进入到中央处理器（SpringMVC中的内容），SpringMVC会根据配置的规则进行拦截</p>
+</li>
+<li><p>如果满足规则，则进行处理，找到其对应的<code>Controller</code>类中的方法进行，完成后返回结果</p>
+</li>
+<li><p>如果不满足规则，则不进行处理</p>
+</li>
+<li><p>这个时候，如果我们需要在每个<code>Controller</code>方法执行的前后添加业务，具体该如何来实现？ </p>
+<ul>
+<li><p>这个就是拦截器要做的事</p>
+</li>
+<li><p>拦截器（Interceptor）是一种动态拦截方法调用的机制，在<strong>SpringMVC</strong>中动态拦截控制器方法的执行</p>
+<ul>
+<li><p>在指定的方法调用前后执行预先设定的代码</p>
+</li>
+<li><p>阻止原始方法的执行</p>
+</li>
+</ul>
+</li>
+<li><p>总结</p>
+<ul>
+<li>拦截器就是用来作增强</li>
+<li>但是这个拦截器同之前学的过滤器很像，不管是从作用上来看还是从执行顺序上来看</li>
+<li>那么拦截器和过滤器之间的区别是什么呢？ <ul>
+<li>归属不同：<code>Filter</code>属于<strong>Servlet</strong>技术，而<code>Interceptor</code>属于<strong>SpringMVC</strong>技术</li>
+<li>拦截内容不同：<code>Filter</code>对所有访问进行增强，<code>Interceptor</code>仅对<strong>SpringMVC</strong>的访问进行增强</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+</ol>
+<p>	</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://github.com/chiredeqiudong">炽热の秋冬</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://chiredeqiudong.github.io/2024/06/26/%E9%BB%91%E9%A9%ACRedis/">https://chiredeqiudong.github.io/2024/06/26/黑马Redis/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://chiredeqiudong.github.io" target="_blank">Zy's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.jpg" target="_blank"><img class="post-qr-code-img" src="/img/wechat.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2024/06/24/hello-world/" title="Hello World"><img class="cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Hello World</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://avatars.githubusercontent.com/u/153713561?v=4" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">炽热の秋冬</div><div class="author-info__description">明日复明日，明日何其多</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">2</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/chiredeqiudong" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:2939551471@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog！！！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%85%E5%AE%B9%E6%A6%82%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text">内容概述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E7%AE%80%E4%BB%8B"><span class="toc-number">2.</span> <span class="toc-text">项目简介</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%BC%E5%85%A5%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B"><span class="toc-number">2.1.</span> <span class="toc-text">导入前端工程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%BC%E5%85%A5%E5%90%8E%E7%AB%AF%E5%B7%A5%E7%A8%8B"><span class="toc-number">2.2.</span> <span class="toc-text">导入后端工程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E6%90%AD%E5%BB%BA"><span class="toc-number">2.3.</span> <span class="toc-text">数据库搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%A8%E7%BB%93%E6%9E%84%E8%AF%B4%E6%98%8E"><span class="toc-number">2.3.1.</span> <span class="toc-text">表结构说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E9%9B%86-%E6%8E%92%E5%BA%8F%E5%AD%97%E7%AC%A6%E9%9B%86"><span class="toc-number">2.3.2.</span> <span class="toc-text">字符集&amp;排序字符集</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis%E6%90%AD%E5%BB%BA"><span class="toc-number">2.4.</span> <span class="toc-text">Redis搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9F%AD%E4%BF%A1%E7%99%BB%E5%BD%95%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.4.1.</span> <span class="toc-text">短信登录实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%99%BB%E5%BD%95%E6%8B%A6%E6%88%AA"><span class="toc-number">2.5.</span> <span class="toc-text">登录拦截</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86"><span class="toc-number">2.5.1.</span> <span class="toc-text">前置知识</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%BB%91%E9%A9%AC%E6%8F%90%E4%BE%9B%E7%9A%84Tomcat%E7%9A%84%E8%BF%90%E8%A1%8C%E5%8E%9F%E7%90%86"><span class="toc-number">2.5.2.</span> <span class="toc-text">黑马提供的Tomcat的运行原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ThreadLocal"><span class="toc-number">2.5.3.</span> <span class="toc-text">ThreadLocal</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Session%E5%85%B1%E4%BA%AB%E9%97%AE%E9%A2%98"><span class="toc-number">2.5.4.</span> <span class="toc-text">Session共享问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis%E7%9A%84%E8%AE%BE%E8%AE%A1"><span class="toc-number">2.5.5.</span> <span class="toc-text">Redis的设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8ERedis%E5%AE%9E%E7%8E%B0%E7%99%BB%E5%BD%95"><span class="toc-number">2.5.6.</span> <span class="toc-text">基于Redis实现登录</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2024/06/26/%E9%BB%91%E9%A9%ACRedis/" title="黑马Redis实战篇学习笔记"><img src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="黑马Redis实战篇学习笔记"/></a><div class="content"><a class="title" href="/2024/06/26/%E9%BB%91%E9%A9%ACRedis/" title="黑马Redis实战篇学习笔记">黑马Redis实战篇学习笔记</a><time datetime="2024-06-25T16:00:00.000Z" title="发表于 2024-06-26 00:00:00">2024-06-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/24/hello-world/" title="Hello World"><img src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Hello World"/></a><div class="content"><a class="title" href="/2024/06/24/hello-world/" title="Hello World">Hello World</a><time datetime="2024-06-23T16:00:00.000Z" title="发表于 2024-06-24 00:00:00">2024-06-24</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2024 By 炽热の秋冬</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="/js/tw_cn.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script id="click-show-text" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/click-show-text.min.js" data-mobile="false" data-text="I,LOVE,YOU" data-fontsize="15px" data-random="true" async="async"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
