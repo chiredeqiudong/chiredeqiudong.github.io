@@ -4,6 +4,25 @@
   
     
     <entry>
+      <title>Tools</title>
+      <link href="/2024/07/02/Tools/"/>
+      <url>/2024/07/02/Tools/</url>
+      
+        <content type="html"><![CDATA[<blockquote><p>一些小工具的介绍与使用，感谢这些博主！</p></blockquote><h1 id="Tools"><a href="#Tools" class="headerlink" title="Tools"></a>Tools</h1><h2 id="个人博客网站配置"><a href="#个人博客网站配置" class="headerlink" title="个人博客网站配置"></a>个人博客网站配置</h2><ol><li><code>ButterFly</code> 主题配置&amp;美化<ol><li>官网<code>https://github.com/jerryc127/hexo-theme-butterfly</code></li><li><code>https://www.cnblogs.com/MoYu-zc/p/14395965.html</code></li></ol></li><li>PicGo + Typora + Smms获取图片超链以及上传<ol><li>Smms图床网站官网<code>https://smms.app/</code></li><li><code>https://blog.csdn.net/dante1987/article/details/127706832</code></li></ol></li></ol>]]></content>
+      
+      
+      <categories>
+          
+          <category> 工具 </category>
+          
+      </categories>
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Redis实战篇学习笔记</title>
       <link href="/2024/06/26/%E9%BB%91%E9%A9%ACRedis/"/>
       <url>/2024/06/26/%E9%BB%91%E9%A9%ACRedis/</url>
