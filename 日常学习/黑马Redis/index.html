@@ -1,13 +1,13 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Redis实战篇学习笔记 | Zy's Blog</title><meta name="author" content="炽热の秋冬"><meta name="copyright" content="炽热の秋冬"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="在此特别感谢黑马程序员Redis课程  黑马程序员的Redis课程  内容概述 短信登录  通过Redis共享Session实现 在苍穹外卖项目中通过Json Web Token实现登录；黑马点评通过Redis共享session实现短-  -	信验证登录。   添加缓存  基于Redis实现给商户添加缓存，设置更新策略，满足读写一致 解决缓存中存在3大问题，缓存穿透、缓存雪崩、缓存击穿 对锁的">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Redis实战篇学习笔记 | Zy's Blog</title><meta name="author" content="炽热の秋冬"><meta name="copyright" content="炽热の秋冬"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="在此特别感谢黑马程序员Redis课程~~黑马程序员的Redis课程  内容概述 短信登录 通过Redis共享Session实现 在苍穹外卖项目中通过Json Web Token实现登录；黑马点评通过Redis共享session实现短-  -	信验证登录。   添加缓存 基于Redis实现给商户添加缓存，设置更新策略，满足读写一致 解决缓存中存在3大问题，缓存穿透、缓存雪崩、缓存击穿 对锁的理解和">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Redis实战篇学习笔记">
 <meta property="og:url" content="https://chiredeqiudong.github.io/%E6%97%A5%E5%B8%B8%E5%AD%A6%E4%B9%A0/%E9%BB%91%E9%A9%ACRedis/index.html">
 <meta property="og:site_name" content="Zy&#39;s Blog">
-<meta property="og:description" content="在此特别感谢黑马程序员Redis课程  黑马程序员的Redis课程  内容概述 短信登录  通过Redis共享Session实现 在苍穹外卖项目中通过Json Web Token实现登录；黑马点评通过Redis共享session实现短-  -	信验证登录。   添加缓存  基于Redis实现给商户添加缓存，设置更新策略，满足读写一致 解决缓存中存在3大问题，缓存穿透、缓存雪崩、缓存击穿 对锁的">
+<meta property="og:description" content="在此特别感谢黑马程序员Redis课程~~黑马程序员的Redis课程  内容概述 短信登录 通过Redis共享Session实现 在苍穹外卖项目中通过Json Web Token实现登录；黑马点评通过Redis共享session实现短-  -	信验证登录。   添加缓存 基于Redis实现给商户添加缓存，设置更新策略，满足读写一致 解决缓存中存在3大问题，缓存穿透、缓存雪崩、缓存击穿 对锁的理解和">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://s2.loli.net/2024/07/02/gyRW72wpiqJZokc.jpg">
 <meta property="article:published_time" content="2024-06-25T16:00:00.000Z">
-<meta property="article:modified_time" content="2024-07-29T03:34:04.087Z">
+<meta property="article:modified_time" content="2024-08-02T00:53:28.334Z">
 <meta property="article:author" content="炽热の秋冬">
 <meta property="article:tag" content="Redis">
 <meta name="twitter:card" content="summary">
@@ -56,7 +56,7 @@
   isHome: false,
   isHighlightShrink: true,
   isToc: true,
-  postUpdate: '2024-07-29 11:34:04'
+  postUpdate: '2024-08-02 08:53:28'
 }</script><script>(win=>{
       win.saveToLocal = {
         set: (key, value, ttl) => {
@@ -174,34 +174,29 @@
     document.addEventListener('pjax:send', () => { preloader.initLoading() })
     document.addEventListener('pjax:complete', () => { preloader.endLoading() })
   }
-})()</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://avatars.githubusercontent.com/u/153713561?v=4" onerror="onerror=null;src='/img/loading.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">8</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博客</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://s2.loli.net/2024/07/02/nWEDQUVbCFgLq34.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="Zy's Blog"><span class="site-name">Zy's Blog</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博客</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Redis实战篇学习笔记</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-06-25T16:00:00.000Z" title="发表于 2024-06-26 00:00:00">2024-06-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-07-29T03:34:04.087Z" title="更新于 2024-07-29 11:34:04">2024-07-29</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E9%BB%91%E9%A9%AC%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B/">黑马学习课程</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">19.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>74分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Redis实战篇学习笔记"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
-<p> 在此特别感谢黑马程序员Redis课程</p>
-<p> <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1cr4y1671t?p=70&vd_source=7341c7fca3b496e9108bb1fd49c634ef">黑马程序员的Redis课程</a></p>
+})()</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://avatars.githubusercontent.com/u/153713561?v=4" onerror="onerror=null;src='/img/loading.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">8</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博客</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://s2.loli.net/2024/07/02/nWEDQUVbCFgLq34.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="Zy's Blog"><span class="site-name">Zy's Blog</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博客</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Redis实战篇学习笔记</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-06-25T16:00:00.000Z" title="发表于 2024-06-26 00:00:00">2024-06-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-08-02T00:53:28.334Z" title="更新于 2024-08-02 08:53:28">2024-08-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E9%BB%91%E9%A9%AC%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B/">黑马学习课程</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">19.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>74分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Redis实战篇学习笔记"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<p>在此特别感谢黑马程序员Redis课程~~<br><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1cr4y1671t?p=70&vd_source=7341c7fca3b496e9108bb1fd49c634ef">黑马程序员的Redis课程</a></p>
 </blockquote>
 <h1 id="内容概述"><a href="#内容概述" class="headerlink" title="内容概述"></a>内容概述</h1><ul>
-<li><p><em><strong>短信登录</strong></em></p>
-<ul>
+<li><em><strong>短信登录</strong></em><ul>
 <li>通过Redis共享Session实现</li>
 <li>在苍穹外卖项目中通过Json Web Token实现登录；黑马点评通过Redis共享session实现短-  -	信验证登录。</li>
 </ul>
 </li>
-<li><p><em><strong>添加缓存</strong></em></p>
-<ul>
+<li><em><strong>添加缓存</strong></em><ul>
 <li>基于Redis实现给商户添加缓存，设置更新策略，满足读写一致</li>
 <li>解决缓存中存在3大问题，缓存穿透、缓存雪崩、缓存击穿</li>
 <li>对锁的理解和线程池的创建&amp;使用（开启独立线程）</li>
 </ul>
 </li>
-<li><p><em><strong>优惠卷秒杀</strong></em></p>
-<ul>
+<li><em><strong>优惠卷秒杀</strong></em><ul>
 <li>基本优惠卷和秒杀优惠卷以及优惠卷订单的添加</li>
 <li>通过加乐观锁&amp;悲观锁的方式解决库存超卖问题</li>
 <li>通过加锁实现对单机状态下一人一单的细粒度控制</li>
 <li>集群环境下的并发问题分析</li>
 </ul>
 </li>
-<li><p><em><strong>分布式锁</strong></em></p>
-<ul>
+<li><em><strong>分布式锁</strong></em><ul>
 <li>分布式锁的实现，以及误删问题、获取、判断、删除锁的原子性问题</li>
 <li>线程标识解决误删问题、</li>
 <li>lua脚本解决原子性问题</li>
@@ -213,51 +208,44 @@
 </li>
 </ul>
 </li>
-<li><p><em><strong>秒杀优化</strong></em></p>
-<ul>
+<li><em><strong>秒杀优化</strong></em><ul>
 <li>异步”秒杀”的思路分析</li>
 <li>基于lua脚本完成订单业务的判断</li>
 <li>通过阻塞对垒与独立线程处理订单异步任务完成下单</li>
 </ul>
 </li>
-<li><p><em><strong>Redis消息队列</strong></em></p>
-<ul>
+<li><em><strong>Redis消息队列</strong></em><ul>
 <li>认识什么是消息队列，市面上常用的消息中间件</li>
 <li>基于Redis的List、PubSub、Stream结构实现消息队列</li>
 <li>三种结构对实现消息队列的优缺点</li>
 <li>基于Stream结构的消费者组模式下实现多消费秒杀下单</li>
 </ul>
 </li>
-<li><p><em><strong>达人探店</strong></em></p>
-<ul>
+<li><em><strong>达人探店</strong></em><ul>
 <li>如何基于云存储服务实现照片上传</li>
 <li>基于Redis的Set集合实现用户是否对某博文进行过点赞</li>
 <li>基于Redis的SortedSet集合实现用户是否对某博文进行过点赞，以及点赞用户通过时间先后排序</li>
 <li>了解MySQL的查询结果机制，实现给定顺序上传</li>
 </ul>
 </li>
-<li><p><em><strong>好友关注</strong></em></p>
-<ul>
+<li><em><strong>好友关注</strong></em><ul>
 <li>多对多型表结构关系的建立</li>
 <li>基于SortedSet实现”交集”查询</li>
 <li>什么时Feed流，Feed流的实现方式</li>
 <li>SortedSet的ZREVRANGEBYSCORE命令，实现滚动分</li>
 </ul>
 </li>
-<li><p><em><strong>附近商铺</strong></em></p>
-<ul>
+<li><em><strong>附近商铺</strong></em><ul>
 <li>了解Redis中GEO这种数据结构的使用</li>
 <li>通过GEO来实现附近商铺的位置搜索</li>
 </ul>
 </li>
-<li><p><em><strong>用户签到</strong></em></p>
-<ul>
+<li><em><strong>用户签到</strong></em><ul>
 <li>了解Redis中BitMap这种数据结构的使用</li>
 <li>通过BitMap实现签到功能和连续签到次数</li>
 </ul>
 </li>
-<li><p><em><strong>UV统计</strong></em></p>
-<ul>
+<li><em><strong>UV统计</strong></em><ul>
 <li>了解LogLog概率统计算法</li>
 <li>了解Redis中HyperLogLog这种数据结构应用</li>
 </ul>
