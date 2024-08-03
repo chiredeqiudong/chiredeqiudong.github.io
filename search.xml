@@ -49,8 +49,8 @@
     
     <entry>
       <title>Nginx学习</title>
-      <link href="/cn/Nginx/"/>
-      <url>/cn/Nginx/</url>
+      <link href="/cn/nginx/"/>
+      <url>/cn/nginx/</url>
       
         <content type="html"><![CDATA[<blockquote><p>因为是后端开发，所以我对nginx学习主要在于部署项目以及一些基本配置</p></blockquote><h1 id="Nginx简介"><a href="#Nginx简介" class="headerlink" title="Nginx简介"></a>Nginx简介</h1><blockquote><p>官网:&#96;<a href="https://nginx.org/">https://nginx.org/</a></p></blockquote>]]></content>
       
