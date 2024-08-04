@@ -29,6 +29,31 @@
     
     
     <entry>
+      <title>JSR303校验</title>
+      <link href="/cn/JSR303/"/>
+      <url>/cn/JSR303/</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+      
+      <categories>
+          
+          <category> 学习 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 数据校验 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>自动更新博客内容</title>
       <link href="/cn/BlogUpdate/"/>
       <url>/cn/BlogUpdate/</url>
