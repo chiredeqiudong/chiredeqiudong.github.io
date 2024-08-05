@@ -29,11 +29,11 @@
     
     
     <entry>
-      <title>JSR303校验</title>
+      <title>JSR-303规范</title>
       <link href="/cn/JSR303/"/>
       <url>/cn/JSR303/</url>
       
-        <content type="html"><![CDATA[]]></content>
+        <content type="html"><![CDATA[<blockquote><p>数据校验的好处母庸置疑，因为黑马的《学成在线》项目用到了参数校验的规范-<code>JSR-303</code>，所以这里记录一下。</p></blockquote><h3 id="什么是数据校验？"><a href="#什么是数据校验？" class="headerlink" title="什么是数据校验？"></a>什么是数据校验？</h3><p>数据校验是项目中必不可少的因素，数据校验后的数据才有了规范以及合理性，不经校验就使用的话将造成不必要的麻烦，严重可能导致整个业务链出现异常。<br>在注册账户时，可以使用Regex正则表达式去怕判断电话号码、邮箱、用户名…的合理性；在登陆时，可以通过前端的数据校验做出提醒，从而减轻服务端压力。</p><h3 id="什么是JSR-303规范？"><a href="#什么是JSR-303规范？" class="headerlink" title="什么是JSR-303规范？"></a>什么是JSR-303规范？</h3><blockquote><p>官网 : <code>https://beanvalidation.org/1.0</code></p></blockquote><p>JSR-303是一套用于对JavaBean进行验证得 Java API 规范 ,又叫做bean validation。</p><h3 id="统一校验的需求"><a href="#统一校验的需求" class="headerlink" title="统一校验的需求"></a>统一校验的需求</h3><ul><li>前端请求后端接口传输参数，是在<code>Controller</code>中校验还是<code>Service</code>中校验？<ul><li>答案是都需要校验，只是分工不同</li><li><code>Controller</code>中校验请求参数的合法性， 比如说必填项校验、数据格式非空校验等</li><li><code>Service</code>中要校验的是业务规则相关的内容，比如说课程状态码是否已经审核通过、员工的状态是否在职等</li></ul></li><li><code>Controller</code>中可以将校验的代码写成通用代码</li><li><code>Service</code>中需要根据业务规则去校验，不方便写成通用代码</li></ul><p>在<code>JavaEE6</code>规范中，定义了<em>参数校验的规范</em>-<code>JSR-303</code>，它定义了<code>Bean Validation</code>，即对bean属性进行校验</p><ul><li><code>SpringBoot</code>提供了<code>JSR-303</code>的支持，它就是<code>spring-boot-stater-validation</code>，它的底层使用<code>Hibernate Validation</code>，<code>Hibernate Validation</code>是<code>Bean Validation</code>的参考实现</li><li>因此我们可以在<code>Controller</code>层使用<code>spring-boot-stater-validation</code>完成对参数的基本合法性进行校验</li></ul><h3 id="统一校验的实现"><a href="#统一校验的实现" class="headerlink" title="统一校验的实现"></a>统一校验的实现</h3>]]></content>
       
       
       <categories>
