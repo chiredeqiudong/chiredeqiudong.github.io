@@ -17,7 +17,7 @@
     
     
     <entry>
-      <title></title>
+      <title>UI学习内容</title>
       <link href="/cn/UI%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/"/>
       <url>/cn/UI%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/</url>
       
@@ -36,6 +36,25 @@
       
         <content type="html"><![CDATA[]]></content>
       
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Lambda表达式</title>
+      <link href="/cn/Lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/"/>
+      <url>/cn/Lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+      
+      <categories>
+          
+          <category> 学习笔记 </category>
+          
+      </categories>
       
       
     </entry>
@@ -62,25 +81,6 @@
             <tag> Redis </tag>
             
         </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>Lambda表达式</title>
-      <link href="/cn/Lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/"/>
-      <url>/cn/Lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/</url>
-      
-        <content type="html"><![CDATA[]]></content>
-      
-      
-      <categories>
-          
-          <category> 学习笔记 </category>
-          
-      </categories>
-      
       
     </entry>
     
