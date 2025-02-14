@@ -1,0 +1,467 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>具体理解单点登录 | Zy's Blog</title><meta name="author" content="炽热の秋冬"><meta name="copyright" content="炽热の秋冬"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="单点登录首先，我们先了解一下单点登录是由什么而来的。 前言在早期的时候，项目一般都是单系统，即所有功能都在一个系统上。那时候用户量小，所以单系统项目可以满足需求。下图就是一个单体项目：  当下，由于用户量激增以及为了方便系统的升级和维护，大多数公司采用的方案是“分布式系统”。直接来说，就是细化功能，将“登录”、“购物”等功能从“商城”中能拆分成多个子系统。如下图：  在这种”分体式系统“逐渐流行起">
+<meta property="og:type" content="article">
+<meta property="og:title" content="具体理解单点登录">
+<meta property="og:url" content="https://chiredeqiudong.github.io/cn/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%EF%BC%88SSO%EF%BC%89/index.html">
+<meta property="og:site_name" content="Zy&#39;s Blog">
+<meta property="og:description" content="单点登录首先，我们先了解一下单点登录是由什么而来的。 前言在早期的时候，项目一般都是单系统，即所有功能都在一个系统上。那时候用户量小，所以单系统项目可以满足需求。下图就是一个单体项目：  当下，由于用户量激增以及为了方便系统的升级和维护，大多数公司采用的方案是“分布式系统”。直接来说，就是细化功能，将“登录”、“购物”等功能从“商城”中能拆分成多个子系统。如下图：  在这种”分体式系统“逐渐流行起">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/07/02/nWEDQUVbCFgLq34.jpg">
+<meta property="article:published_time" content="2025-02-13T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-02-14T14:55:04.867Z">
+<meta property="article:author" content="炽热の秋冬">
+<meta property="article:tag" content="sso">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2024/07/02/nWEDQUVbCFgLq34.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://chiredeqiudong.github.io/cn/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%EF%BC%88SSO%EF%BC%89/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":-1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '具体理解单点登录',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: true,
+  isToc: true,
+  postUpdate: '2025-02-14 22:55:04'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.2.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (false) {
+    document.addEventListener('pjax:send', () => { preloader.initLoading() })
+    document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+  }
+})()</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://avatars.githubusercontent.com/u/153713561?v=4" onerror="onerror=null;src='/img/loading.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">12</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博客</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://s2.loli.net/2024/07/02/nWEDQUVbCFgLq34.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="Zy's Blog"><span class="site-name">Zy's Blog</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博客</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">具体理解单点登录</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-02-13T16:00:00.000Z" title="发表于 2025-02-14 00:00:00">2025-02-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-02-14T14:55:04.867Z" title="更新于 2025-02-14 22:55:04">2025-02-14</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">5.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>19分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="具体理解单点登录"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="单点登录"><a href="#单点登录" class="headerlink" title="单点登录"></a>单点登录</h1><p>首先，我们先了解一下单点登录是由什么而来的。</p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在早期的时候，项目一般都是单系统，即所有功能都在一个系统上。那时候用户量小，所以单系统项目可以满足需求。下图就是一个单体项目：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250209184106.png" alt="单体项目"></p>
+<p>当下，由于用户量激增以及为了方便系统的升级和维护，大多数公司采用的方案是“分布式系统”。直接来说，就是细化功能，将“登录”、“购物”等功能从“商城”中能拆分成多个子系统。如下图：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250209185210.png" alt="示例"></p>
+<p>在这种”分体式系统“逐渐流行起来后，出现了一个问题，“随着子系统的增加，用户每次访问应用系统时都需要重新登录”，用户不仅需要记录多个账号和密码，而且浏览体验也不是好。</p>
+<p>为了解决用户在多个应用系统中频繁登录的问题，人们随即设计出了<strong>单点登录</strong>（Single Sign-On，简称SSO）。</p>
+<p>比如阿里系的<a target="_blank" rel="noopener" href="https://www.taobao.com/">淘宝</a>和<a target="_blank" rel="noopener" href="https://www.tmall.com/">天猫</a>这两个网站，就采用了单点登录的方式。在淘宝完成登录后，就不需要在天猫登录。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../../resources/v2-66b99e0dc2718eee2b1a8cdb07503f8b_1440w.jpg" alt="示例"></p>
+<p>现在知道 SSO 的主要的用途之后，我们再讲讲其设计思路和实现。这里我先提出2个<em>问题:</em></p>
+<ol>
+<li>为什么在淘宝登录后，天猫也会完成登录，它们之间如何产生联系的？</li>
+<li>在淘宝和天猫这2个系统的后台中它们是如何做到使用同一用户数据的？</li>
+</ol>
+<p>对于第二个问题其实很好想到，我们只需要让系统A和系统B使用<strong>同一个数据库</strong>。第一个问题我这里贴几张图来回答。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250209221446.png" alt="|650"></p>
+<p>常规登录模式就如上图所示，用户登录系统A后还需要登录系统B、C，非常繁琐。当在我们对A、B、C三个系统采取单点登录（SSO）模式后，就像下图一样，用户通过 SSO 后，系统A、B、C其实就已经完成了登录，对于各个系统之间的联系相当于是在 SSO 中进行构建的。</p>
+<p>“系统A和系统B出自同一家公司，那么只要在SSO中构建系统A、B的关系，当我登录了系统A时，SSO 自动帮我完成系统B的登录”。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250209225459.png" alt="|650"></p>
+<p>这里，我简要的介绍了下 SSO 的用途和其中涉及到的问题，后续我将基于<a target="_blank" rel="noopener" href="https://sa-token.cc/doc.html#/sso/readme">Sa-Token</a>的单点登录模块进行讲解。</p>
+<p>我们其实可以看出来，上图 SSO 端在这里相当于所有子系统登录的<em>前站</em>，用户只要没有登录就需要经过 SSO 端，对于后续其他系统的登录，也是通过 SSO 进行调度的。因此，SSO 端我们统一称呼为<strong>认证中心</strong>。</p>
+<p>我们需要学习的也就是如何搭建这个 SSO 端，再细分一下，SSO 端其实应该分为 <strong>SSO-Server端</strong> 和 <strong>SSO-Client端</strong>。</p>
+<p>然后我再根据系统的搭建方式，由易到难的讲解实现以下单点登录的三个模式：</p>
+<ol>
+<li>前端同域，后端同 Redis</li>
+<li>前端不同域，后端同 Redis</li>
+<li>前端不同域，后端不同 Redis</li>
+</ol>
+<p>同域：各个系统前端部署在同一域名下，同 Redis：后台用户数据共享一个 Redis 实例，比如说<a target="_blank" rel="noopener" href="https://www.taobao.com/">淘宝</a>和<a target="_blank" rel="noopener" href="https://www.tmall.com/">天猫</a>这两个系统是前端不同域的模式。</p>
+<p>后续我将要讲解如何在以上三个模式下搭建 SSO-Server 和 SSO-Client。</p>
+<h2 id="模式一-共享Cookie同步会话"><a href="#模式一-共享Cookie同步会话" class="headerlink" title="模式一 共享Cookie同步会话"></a>模式一 共享Cookie同步会话</h2><blockquote>
+<p>搭建示例在 <code>https://gitee.com/chiredeqiudong/spring-boot-demo/tree/master/sa-token-demo/sa-token-demo-sso-server</code><br>也可以直接使用 Sa-Token 官方仓库的demo示例。</p>
+</blockquote>
+<p>首先我们肯定需要搭建一个基本的认证中心（后续称 SSO-Server）。这个认证中心要做到以下功能：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250210165528.png"></p>
+<ul>
+<li>这里的登录请求是指所有与 SSO 相关的请求。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**  </span></span><br><span class="line"><span class="comment"> * SSO-Server端：处理所有SSO相关请求   </span></span><br><span class="line"><span class="comment"> * http://&#123;host&#125;:&#123;port&#125;/sso/auth  单点登录授权地址</span></span><br><span class="line"><span class="comment"> * http://&#123;host&#125;:&#123;port&#125;/sso/doLogin  账号密码登录接口</span></span><br><span class="line"><span class="comment"> * http://&#123;host&#125;:&#123;port&#125;/sso/checkTicket  Ticket校验接口 </span></span><br><span class="line"><span class="comment"> * http://&#123;host&#125;:&#123;port&#125;/sso/signout  单点注销地址</span></span><br><span class="line"><span class="comment"> */</span>  </span><br><span class="line"><span class="meta">@RequestMapping(&quot;/sso/*&quot;)</span>  </span><br><span class="line"><span class="keyword">public</span> Object <span class="title function_">ssoRequest</span><span class="params">()</span> &#123;  </span><br><span class="line">    <span class="keyword">return</span> SaSsoServerProcessor.instance.dister();  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后我们再根据下图分析模式1下的单点登录：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250210180132.png" alt="示例"></p>
+<p>我们主要分析系统B登录的线路，很明显我们需要知道：“为什么 SSO-Server 会通过系统B的登录验证？”。</p>
+<p>不用想的是肯定和成功登录系统A有关，而且很明显可以得出这样一个结论：用户通过系统A在 SSO-Server 成功登陆后，SSO-Server 做了<strong>一件事</strong>让系统A、B的<em>身份得以被标识</em>，以致于后续用户登录系统B时可以被 SSO-Server <em>确认身份</em>。</p>
+<p>在经过上述分析后，我们在回顾模式一的特点：“同域，同Redis”。这里重点说明一下会话技术中同域的特点：“<strong>Cookie 共享</strong>”。所谓共享 Cookie，就是主域名 Cookie 在二级域名下的共享，举个例子：写在父域名<code>stp.com</code>下的 Cookie，在<code>s1.stp.com</code>、<code>s2.stp.com</code>等子域名都是可以共享访问的，如下图：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/g3--sso1.gif" alt="示例"></p>
+<p>在知道 Cookie 共享这一特点后，SSO-Server 在用户登录成功后做的“那件事”就可以有一个思路了：SSO-Server 将该用户的<em>登录标识</em>通过 Cookie 写在了主域名下。</p>
+<p>因此，该模式下单点登录的实现方法应该是：用户在登录系统B时，其在 SSO-Server 并不需要登录但是携带的 Cookie 是一个可以表明身份的有效标识，且在 SSO-Server 验证后，B-SSO-Client 成功响应。</p>
+<p>理论结束！接下来是demo演示。</p>
+<p>修改hosts文件<code>(C:\windows\system32\drivers\etc\hosts)</code>，添加以下IP映射，方便单机进行测试：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">127.0.0.1 sso.stp.com</span><br><span class="line">127.0.0.1 s1.stp.com</span><br><span class="line">127.0.0.1 s2.stp.com</span><br><span class="line">127.0.0.1 s3.stp.com</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>通过<a target="_blank" rel="noopener" href="https://github.com/oldj/SwitchHosts">SwitchHosts</a>修改Host文件</p>
+</blockquote>
+<p>认证中心和应用端成功启动后，分别打开3个 SSO-Client 应用端：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250210224451.png" alt="示例"></p>
+<p>上图是我们模拟的一个多系统登录场景，可以看出来它们都是以<code>stp.com</code>域名扩展出来的二级域名。</p>
+<p>在<code>s1</code>页点击登录，因为我们是第一次登录所以在点击“登录”时会被重定向至<code>SSO-Server</code>认证中心进行登录。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250210225733.png" alt="示例"></p>
+<p>然后，我们在来看一下成功登录后，SSO-Server 和 SSO-Client 有什么变化：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250210230917.png" alt="示例"></p>
+<p>在成功登录后，又重定向回了初始页面，这时候登录状态为true，并且查看 Cookie 可以发现都多出了<code>satoken</code>值。然后我们再看Redis的存储情况，如下图，这个<code>satoken</code>在 Redis中是用户 ID 的 key ，也就是说这个<code>satoken</code>就是前文所说的<strong>用户身份的有效标识</strong>。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250210231650.png" alt="示例"></p>
+<p>很好，我们继续系统s2、s3的登录，结果如下图：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250210232219.png" alt="示例"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250210232345.png" alt="示例"></p>
+<p>点击登录时，因为有该 Cookie 的存在，所以我们并没有跳转到认证中心（登录自动化了）。这也达到了目标效果：“一次登录，全部生效”。</p>
+<p>当点击某一子系统的注销时，其他子系统的登录状态也将注销。虽然浏览器的Cookie还没有过期，但是后台的 Redis 数据被清除了。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250210233228.png" alt="示例"></p>
+<p>总结：整个过程中，除了第5步，用户在 SSO 认证中心登录时会被打断，其余过程均是自动化的，当用户在另一个子系统再次点击<code>[登录]</code>按钮，由于前端共享 Cookie 得以让 SSO 认证中心确认其身份，所以第四步也将自动化，也就是单点登录的最终目的 —— 一次登录，处处通行。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250211123933.png" alt="示例"></p>
+<p>如果我们的子系统<em>在完全不同的域名下</em>，我们又该怎么完成单点登录功能呢？</p>
+<h2 id="模式二-URL重定向传播会话"><a href="#模式二-URL重定向传播会话" class="headerlink" title="模式二 URL重定向传播会话"></a>模式二 URL重定向传播会话</h2><blockquote>
+<p>demo搭建示例：<code>https://gitee.com/chiredeqiudong/spring-boot-demo/tree/master/sa-token-demo/sa-token-demo-sso2-client</code></p>
+</blockquote>
+<p>很明显，我们前端部署在不同子域名下，就无法通过共享 Cookie 来同步会话。所以说模式二具体来说就是如何让各个系统有着 SSO-Server 可以认证的身份标识。</p>
+<p>模式二是 URL重定向传播会话，这里的“URL重定向”是如何解决无法Cookie共享的呢？下面以图片形式先介绍一下几个角色，分别是“全局会话、子会话、Ticket码”。这三个角色是模式二是能够传播会话的关键。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250211171626.png" alt="示例"></p>
+<blockquote>
+<p>会话：会话（Session）是指在用户与服务器之间建立的一种逻辑连接，用于在无状态的HTTP协议下维护用户的状态信息。它允许服务器在多次请求之间记住用户的身份、偏好和其他相关信息。<br>全局会话：全局会话（Global Session）并不是Java标准中的一个术语，但它通常出现在一些特定的框架或场景中，例如在分布式系统或集群环境下。全局会话的概念是相对于普通会话而言的，它跨越多个服务器实例或应用模块，提供一种全局共享的会话机制。</p>
+</blockquote>
+<p>知道这几个新角色后，再根据 Sa-Token 提供的<em>通过URL重定向传播会话</em>实现方式：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/g3--sso2.gif" alt="示例"></p>
+<ol>
+<li>用户在 子系统 点击 <code>[登录]</code> 按钮。</li>
+<li>用户跳转到子系统登录接口 <code>/sso/login</code>，并携带 <code>back参数</code> 记录初始页面URL。<ul>
+<li>形如：<code>http://&#123;sso-client&#125;/sso/login?back=xxx</code></li>
+</ul>
+</li>
+<li>子系统检测到此用户尚未登录，再次将其重定向至SSO认证中心，并携带<code>redirect参数</code>记录子系统的登录页URL。<ul>
+<li>形如：<code>http://&#123;sso-server&#125;/sso/auth?redirect=xxx?back=xxx</code></li>
+</ul>
+</li>
+<li>用户进入了 SSO认证中心 的登录页面，开始登录。</li>
+<li>用户输入账号密码并登录成功，SSO认证中心再次将用户重定向至子系统的登录接口<code>/sso/login</code>，并携带<code>ticket码</code>参数。<ul>
+<li>形如：<code>http://&#123;sso-client&#125;/sso/login?back=xxx&amp;ticket=xxxxxxxxx</code></li>
+</ul>
+</li>
+<li>子系统根据 <code>ticket码</code> 从 <code>SSO-Redis</code> 中获取账号id，并在子系统登录此账号会话。</li>
+<li>子系统将用户再次重定向至最初始的 <code>back</code> 页面。</li>
+</ol>
+<p>整个过程，除了第四步用户在SSO认证中心登录时会被打断，其余过程均是自动化的，当用户在另一个子系统再次点击<code>[登录]</code>按钮，由于<em>此用户在SSO认证中心已有会话存在</em>， 所以第四步也将自动化。</p>
+<p>总结以上过程，相对模式一的根本改变是<code>token</code>不再是通过 Cookie 写到主域名下，而是通过URL重定向的方式将<code>ticket</code>作为请求行参数传给子系统。子系统后端根据<code>ticket</code>码从<code>Redis</code>获取账号信息。这里的<code>ticket</code>码我们称之为跨域登录凭证。</p>
+<p>比较疑惑的是B系统登录请求的<code>token</code>出自何处？仔细分析 <span style="text-decoration: underline; text-decoration-color: red;"> 此用户在SSO认证中心已有会话存在</span> 这段话，这说明B系统登录请求的<code>token</code>同“用户与认证中心的会话”有关。</p>
+<p>分析整个流程，用户和认证中心可以建立会话的情况，也就是在当前系统未登录然后被重定向的这个时期才会建立会话，也就是说B系统登录请求的<code>token</code>大概率是用户在系统A登录时同认证中心会话保留的。</p>
+<p>理论结束，后续根据实践的方式逐步探索系统B发出登录请求的<code>token</code>来自何处。</p>
+<p>首先修改hosts文件<code>(C:\windows\system32\drivers\etc\hosts)</code>，添加以下IP映射：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">127.0.0.1 sa-sso-server.com</span><br><span class="line">127.0.0.1 sa-sso-client1.com</span><br><span class="line">127.0.0.1 sa-sso-client2.com</span><br><span class="line">127.0.0.1 sa-sso-client3.com</span><br></pre></td></tr></table></figure>
+
+<p>用户在系统A登录时被重定向至 SSO-Server：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250213120437.png" alt="示例"></p>
+<p>上述三张图片分别是 Redis 存储情况、SSO-Server 的重定向 url 以及携带的请求 Cookie（上次测试遗留）。按照之前的理论分析，因为此时用户还没有和认证中心<em>建立会话</em>所以在登录系统A时是没有<em>正确请求 Cookie</em> 的，所以验证不成功需要重新登录。</p>
+<p>正确登录后，我们看发现了那些变化：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250213121649.png"></p>
+<p>我们可以看到 Redis 中有了共享数据，然后我们继续登录系统B，我们需要明确的是因为跨域限制，B-SSO-Client 是肯定不会有 A-SSO-Client 中的请求 Cookie，也就是<code>token</code>。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250213122616.png" alt="示例"></p>
+<p>全部流程结束，如上图所示系统B登录时总共<strong>三次请求</strong>。第一个是在 B-SSO-Client 中进行登录请求，因为用户尚未在系统B登录所以重定向至 SSO-Server，也就是第二个请求。可以看到在第二张图片中，请求 Cookie 是存在的并且就是当前用户的 token 值，因此认证成功携带<code>ticket</code>重定向至登录页，也就是第三个请求。系统B根据 <code>ticket码</code> 从 <code>Redis</code> 中获取账号id，并在子系统登录此账号会话，完成登录。</p>
+<p>系统B发出登录请求的<code>token</code>来自何处，现在有了确切的答案。这是因为在前面访问系统A的时候，已经通过 SSO 完成登录，SSO 站点域名的 cookie 中就保存有 token；所以后面访问系统B，就可以直接从 SSO 站点域名 cookie 中读取到 token，通过身份认证，不需要重新登录。</p>
+<p>我们再说一下单点登出的实现过程，主要有2步操作：</p>
+<ol>
+<li>SSO 服务端清除 Redis 中的登录状态</li>
+<li>浏览器清除 SSO 站点域名下 cookie 中存储的 token，以及<strong>进行登出操作的业务站点域名下 cookie 中存储的 token</strong>。</li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250213144457.png" alt="示例"></p>
+<p>最后，总结一下“URL重定向传播会话”的关键在于<strong>跨域会话管理</strong>。下图为全局流程图（赋文字解释）。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250213144124.png" alt="示例"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250213144240.png" alt="示例"></p>
+<blockquote>
+<p>上三张图取自：<a target="_blank" rel="noopener" href="https://blog.csdn.net/incredible1024/article/details/134645247">SSO单点登录设计实现</a></p>
+</blockquote>
+<p>以上流程解决了跨域模式下的单点登录和登出，但是后端采用了共享 Redis 来同步会话，如果我们的架构设计中 SSO-Client 端与 SSO-Server 端无法共享 Redis，又该怎么完成单点登录？</p>
+<h2 id="模式三-Http请求获取会话"><a href="#模式三-Http请求获取会话" class="headerlink" title="模式三 Http请求获取会话"></a>模式三 Http请求获取会话</h2><blockquote>
+<p>demo搭建示例：<code>https://gitee.com/chiredeqiudong/spring-boot-demo/tree/master/sa-token-demo/sa-token-demo-sso3-client</code></p>
+</blockquote>
+<p>首先还是先明确，Client 端与 Server 端无法共享 Redis 对于模式一和模式二的影响有哪些。</p>
+<p>根据之前的实现过程截图，可以知道 Redis 中主要存储的是以<code>token</code>或者<code>ticket</code>作为key的用户数据，而如果后端没有共享 Redis，在用户登录后用户数据保存在<code>x-redis</code>（某个服务，一般是 SSO-Server），其他系统按照之前的模式是无法获取到用户数据的。所以第一个重要影响就是多个服务之间无法共享用户数据。这也导致 Client 端无法与 Server 端共用一套会话，需要自行维护子会话。</p>
+<p>第二个重要影响就是无法“一次注销，全端下线”，需要额外编写代码完成单点注销。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250213224327.png" alt="示例"></p>
+<p>模式三就是要在模式二的基础上消除这两个重要影响。首先，在不能共享 Redis 数据后，上图中的三角关系将变为下图中的二元关系。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250213230123.png"></p>
+<p>子系统的用户数据只能来源于 SSO-Server，所以我们需要解决以什么方式从 SSO-Server 获取。</p>
+<p>在模式三中我们是通过<code>http</code>请求来获取会话，只需要 SSO-Server 提供一个在验证用户身份后<strong>提供数据</strong>的接口。这里我们直接看代码：</p>
+<p>1、SSO-Client端 <code>http</code> 请求处理器</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 配置SSO相关参数 @Autowired  </span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">configSso</span><span class="params">(SaSsoClientConfig ssoClient)</span> &#123;  </span><br><span class="line">    <span class="comment">// 配置Http请求处理器   </span></span><br><span class="line">	ssoClient.sendHttp = url -&gt; &#123;  </span><br><span class="line">       System.out.println(<span class="string">&quot;------ 发起请求：&quot;</span> + url);  </span><br><span class="line">       <span class="type">String</span> <span class="variable">resStr</span> <span class="operator">=</span> Forest.get(url).executeAsString();  </span><br><span class="line">       System.out.println(<span class="string">&quot;------ 请求结果：&quot;</span> + resStr);  </span><br><span class="line">       <span class="keyword">return</span> resStr;  </span><br><span class="line">    &#125;;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>2、SSO-Server 端数据查询接口</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 示例：获取数据接口（用于在模式三下，为 client 端开放拉取数据的接口）</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/sso/getData&quot;)</span></span><br><span class="line"><span class="keyword">public</span> SaResult <span class="title function_">getData</span><span class="params">(String apiType, String loginId)</span> &#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;---------------- 获取数据 ----------------&quot;</span>);</span><br><span class="line">    System.out.println(<span class="string">&quot;apiType=&quot;</span> + apiType);</span><br><span class="line">    System.out.println(<span class="string">&quot;loginId=&quot;</span> + loginId);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 校验签名：只有拥有正确秘钥发起的请求才能通过校验</span></span><br><span class="line">    SaSignUtil.checkRequest(SaHolder.getRequest());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 自定义返回结果（模拟）</span></span><br><span class="line">    <span class="keyword">return</span> SaResult.ok()</span><br><span class="line">            .set(<span class="string">&quot;id&quot;</span>, loginId)</span><br><span class="line">            .set(<span class="string">&quot;name&quot;</span>, <span class="string">&quot;LinXiaoYu&quot;</span>)</span><br><span class="line">            .set(<span class="string">&quot;sex&quot;</span>, <span class="string">&quot;女&quot;</span>)</span><br><span class="line">            .set(<span class="string">&quot;age&quot;</span>, <span class="number">18</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>3、SSO-Client端调用认证中心的数据查询接口</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 查询我的账号信息 </span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/sso/myInfo&quot;)</span></span><br><span class="line"><span class="keyword">public</span> Object <span class="title function_">myInfo</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 组织请求参数</span></span><br><span class="line">    Map&lt;String, Object&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">    map.put(<span class="string">&quot;apiType&quot;</span>, <span class="string">&quot;userinfo&quot;</span>);</span><br><span class="line">    map.put(<span class="string">&quot;loginId&quot;</span>, StpUtil.getLoginId());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 发起请求</span></span><br><span class="line">    <span class="type">Object</span> <span class="variable">resData</span> <span class="operator">=</span> SaSsoUtil.getData(map);</span><br><span class="line">    System.out.println(<span class="string">&quot;sso-server 返回的信息：&quot;</span> + resData);</span><br><span class="line">    <span class="keyword">return</span> resData;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个单点登录的实现流程和模式二的主要区别在于客户端不能够直连 redis 获取数据，需要发送<code>http</code>请求向认证中心来共享数据。</p>
+<p>在该模式中我觉得<strong>单点注销</strong>也是非常需要学习的操作。在前面 2 个模式中我们只需要消除一一个 redis 实例中的数据即可，现在由于多个服务使用不同的 redis，所以单点注销的难度大大增加。</p>
+<p>好在 sa-token 很好的解决了这个问题，下面是”单点注销“的流程。</p>
+<ol start="3">
+<li>Client 端在校验 ticket 时，将注销回调地址发送到 Server 端。</li>
+<li>Server 端将此 Client 的注销回调回调信息存储到 List 集合。</li>
+<li>Client 端向 Server 端发送单点注销请求。</li>
+<li>Server 端遍历Set集合，逐个通知 Client 端下线。</li>
+<li>Server 端注销下线。</li>
+<li>单点注销完成。</li>
+</ol>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/../resources/Pasted%20image%2020250214190224.png" alt="示例"></p>
+<p>很明显在服务端和客户端中我们还需要设计有关注销的接口以及一些设置，具体请看-<a target="_blank" rel="noopener" href="https://sa-token.cc/doc.html#/sso/sso-type3?id=_5%e3%80%81%e6%97%a0%e5%88%b7%e5%8d%95%e7%82%b9%e6%b3%a8%e9%94%80">sa-token讲解</a>。</p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><blockquote>
+<p>以下总结非常到位，摘自<code>https://sa-token.cc/doc.html#/sso/sso-type3?id=_6%e3%80%81%e5%90%8e%e8%ae%b0</code></p>
+</blockquote>
+<p>当我们熟读三种模式的单点登录之后，其实不难发现：所谓单点登录，其本质就是<strong>多个系统之间的会话共享</strong>。</p>
+<p>当我们理解这一点之后，三种模式的工作原理也浮出水面：</p>
+<ul>
+<li>模式一：采用共享 Cookie 来做到前端 Token 的共享，从而达到后端的 Session 会话共享。</li>
+<li>模式二：采用 URL 重定向，以 ticket 码为授权中介，做到多个系统间的会话传播。</li>
+<li>模式三：采用 Http 请求主动查询会话，做到 Client 端与 Server 端的会话同步。</li>
+</ul>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p>【会话技术】<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/JW7mxXEqrV1rZ_pQOteXGQ">https://mp.weixin.qq.com/s/JW7mxXEqrV1rZ_pQOteXGQ</a><br>【什么是单点登录】<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/66037342">https://zhuanlan.zhihu.com/p/66037342</a><br>【漫谈单点登录】<a target="_blank" rel="noopener" href="https://www.cnblogs.com/EzrealLiu/p/5559255.html">https://www.cnblogs.com/EzrealLiu/p/5559255.html</a><br>【单点登录原理和简单实现】<a target="_blank" rel="noopener" href="https://www.cnblogs.com/ywlaker/p/6113927.html">https://www.cnblogs.com/ywlaker/p/6113927.html</a><br>【CAS执行原理探究】<a target="_blank" rel="noopener" href="https://blog.csdn.net/javaloveiphone/article/details/52439613">https://blog.csdn.net/javaloveiphone/article/details/52439613</a><br>【Sa-Token单点登录机制（源码分析）】<a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_51433562/article/details/127717892">https://blog.csdn.net/m0_51433562/article/details/127717892</a></p>
+<h1 id="SSO开源框架"><a href="#SSO开源框架" class="headerlink" title="SSO开源框架"></a>SSO开源框架</h1><blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.deepseek.com/">DeepSeek</a>提供的学习建议。</p>
+</blockquote>
+<p>学习开源 SSO（单点登录）框架的代码是理解身份验证和授权机制的绝佳方式。以下是一些值得深入研究的 <strong>Java 开源 SSO 框架</strong>，它们的设计和实现思路各有特色，适合不同层次的学习：</p>
+<h3 id="1-CAS-Central-Authentication-Service"><a href="#1-CAS-Central-Authentication-Service" class="headerlink" title="1. CAS (Central Authentication Service)"></a>1. <strong>CAS (Central Authentication Service)</strong></h3><ul>
+<li><strong>GitHub</strong>: <a target="_blank" rel="noopener" href="https://github.com/apereo/cas">https://github.com/apereo/cas</a></li>
+<li><strong>特点</strong>:<ul>
+<li>企业级 SSO 解决方案，支持多种协议（CAS Protocol, OAuth2, SAML, OpenID Connect）。</li>
+<li>模块化设计，代码结构清晰，适合学习分布式认证流程。</li>
+<li>文档丰富，社区活跃。</li>
+</ul>
+</li>
+<li><strong>学习点</strong>:<ul>
+<li>单点登录的核心流程（Ticket 生成与验证、Token 管理）。</li>
+<li>集成多种协议的实现方式（如 OAuth2 的授权码模式）。</li>
+<li>扩展机制（自定义认证策略、多因素认证）。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-Keycloak"><a href="#2-Keycloak" class="headerlink" title="2. Keycloak"></a>2. <strong>Keycloak</strong></h3><ul>
+<li><strong>GitHub</strong>: <a target="_blank" rel="noopener" href="https://github.com/keycloak/keycloak">https://github.com/keycloak/keycloak</a></li>
+<li><strong>特点</strong>:<ul>
+<li>基于 OAuth2 和 OpenID Connect 的完整身份认证与授权解决方案。</li>
+<li>支持 LDAP、Social Login（如微信、GitHub）等身份源集成。</li>
+<li>提供 Admin REST API 和可扩展的主题界面。</li>
+</ul>
+</li>
+<li><strong>学习点</strong>:<ul>
+<li>OAuth2 和 OpenID Connect 协议的实现细节。</li>
+<li>安全令牌服务（STS）的设计。</li>
+<li>用户联邦（User Federation）和角色映射的实现。</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-Apache-Shiro"><a href="#3-Apache-Shiro" class="headerlink" title="3. Apache Shiro"></a>3. <strong>Apache Shiro</strong></h3><ul>
+<li><strong>GitHub</strong>: <a target="_blank" rel="noopener" href="https://github.com/apache/shiro">https://github.com/apache/shiro</a></li>
+<li><strong>特点</strong>:<ul>
+<li>轻量级安全框架，支持 SSO 扩展。</li>
+<li>核心代码简洁，适合学习基础安全模型（认证、授权、会话管理）。</li>
+</ul>
+</li>
+<li><strong>学习点</strong>:<ul>
+<li>如何通过 Filter 链实现请求拦截和安全控制。</li>
+<li>Realm 的设计与扩展（如 JDBC Realm、JWT Realm）。</li>
+<li>与 Spring&#x2F;Spring Boot 的集成方式。</li>
+</ul>
+</li>
+</ul>
+<h3 id="4-Spring-Security-OAuth2（已归档，但仍有参考价值）"><a href="#4-Spring-Security-OAuth2（已归档，但仍有参考价值）" class="headerlink" title="4. Spring Security OAuth2（已归档，但仍有参考价值）"></a>4. <strong>Spring Security OAuth2</strong>（已归档，但仍有参考价值）</h3><ul>
+<li><strong>GitHub</strong>: <a target="_blank" rel="noopener" href="https://github.com/spring-projects/spring-security-oauth">https://github.com/spring-projects/spring-security-oauth</a></li>
+<li><strong>特点</strong>:<ul>
+<li>Spring 生态的 OAuth2 实现，适合 Spring Boot 项目。</li>
+<li>虽然官方已推荐迁移到 Spring Authorization Server，但代码仍具学习意义。</li>
+</ul>
+</li>
+<li><strong>学习点</strong>:<ul>
+<li>OAuth2 授权服务器与资源服务器的分离设计。</li>
+<li>Token 存储策略（内存、Redis、JWT）。</li>
+<li>客户端认证流程的实现。</li>
+</ul>
+</li>
+</ul>
+<h3 id="5-Sa-Token（国产轻量级框架）"><a href="#5-Sa-Token（国产轻量级框架）" class="headerlink" title="5. Sa-Token（国产轻量级框架）"></a>5. <strong>Sa-Token</strong>（国产轻量级框架）</h3><ul>
+<li><strong>GitHub</strong>: <a target="_blank" rel="noopener" href="https://github.com/dromara/sa-token">https://github.com/dromara/sa-token</a></li>
+<li><strong>特点</strong>:<ul>
+<li>设计简洁，中文文档友好，适合快速上手。</li>
+<li>支持 SSO、权限认证、分布式会话。</li>
+</ul>
+</li>
+<li><strong>学习点</strong>:<ul>
+<li>单点登录的简单实现（如 Ticket 跨域传递）。</li>
+<li>注解驱动的权限控制（如 <code>@SaCheckPermission</code>）。</li>
+<li>分布式会话管理（集成 Redis）</li>
+</ul>
+</li>
+</ul>
+<h3 id="6-JustAuth（第三方登录整合）"><a href="#6-JustAuth（第三方登录整合）" class="headerlink" title="6. JustAuth（第三方登录整合）"></a>6. <strong>JustAuth</strong>（第三方登录整合）</h3><ul>
+<li><strong>GitHub</strong>: <a target="_blank" rel="noopener" href="https://github.com/justauth/JustAuth">https://github.com/justauth/JustAuth</a></li>
+<li><strong>特点</strong>:<ul>
+<li>专注于第三方登录（如微信、GitHub、Google）的整合。</li>
+<li>可与 SSO 框架结合使用，实现多身份源统一登录。</li>
+</ul>
+</li>
+<li><strong>学习点</strong>:<ul>
+<li>OAuth2 客户端的标准化实现。</li>
+<li>如何抽象不同平台的认证差异。</li>
+</ul>
+</li>
+</ul>
+<h3 id="学习建议"><a href="#学习建议" class="headerlink" title="学习建议"></a>学习建议</h3><ol start="9">
+<li><strong>从协议入手</strong>：先理解 OAuth2、OpenID Connect、SAML 等协议的原理，再结合代码分析实现。</li>
+<li><strong>调试与改造</strong>：克隆项目后，通过调试跟踪核心流程（如 <code>/login</code> 请求处理、Token 生成）。</li>
+<li><strong>参考官方文档</strong>：如 CAS 的 <a target="_blank" rel="noopener" href="https://apereo.github.io/cas">Apereo Wiki</a>、Keycloak 的 <a target="_blank" rel="noopener" href="https://www.keycloak.org/documentation">官方指南</a>。</li>
+<li><strong>实践项目</strong>：尝试搭建一个简易 SSO 系统，实现两个应用间的单点登录。</li>
+</ol>
+<p>这些框架的代码质量和设计模式各有千秋，推荐从 <strong>Sa-Token</strong> 或 <strong>CAS</strong> 入手，逐步深入复杂场景（如分布式 Token 管理、多因素认证）。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a target="_blank" rel="noopener" href="https://github.com/chiredeqiudong">炽热の秋冬</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://chiredeqiudong.github.io/cn/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%EF%BC%88SSO%EF%BC%89/">https://chiredeqiudong.github.io/cn/单点登录（SSO）/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://chiredeqiudong.github.io" target="_blank">Zy's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/sso/">sso</a></div><div class="post_share"><div class="social-share" data-image="https://s2.loli.net/2024/07/02/nWEDQUVbCFgLq34.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/cn/Redis%E7%BC%93%E5%AD%98/" title="Redis三大缓存问题"><img class="cover" src="https://s2.loli.net/2024/07/02/nWEDQUVbCFgLq34.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Redis三大缓存问题</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://avatars.githubusercontent.com/u/153713561?v=4" onerror="this.onerror=null;this.src='/img/loading.gif'" alt="avatar"/></div><div class="author-info__name">炽热の秋冬</div><div class="author-info__description">明日复明日，明日何其多</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">12</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/chiredeqiudong"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/chiredeqiudong" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:zy2939551471@outlook.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95"><span class="toc-text">单点登录</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%BC%8F%E4%B8%80-%E5%85%B1%E4%BA%ABCookie%E5%90%8C%E6%AD%A5%E4%BC%9A%E8%AF%9D"><span class="toc-text">模式一 共享Cookie同步会话</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%BC%8F%E4%BA%8C-URL%E9%87%8D%E5%AE%9A%E5%90%91%E4%BC%A0%E6%92%AD%E4%BC%9A%E8%AF%9D"><span class="toc-text">模式二 URL重定向传播会话</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%BC%8F%E4%B8%89-Http%E8%AF%B7%E6%B1%82%E8%8E%B7%E5%8F%96%E4%BC%9A%E8%AF%9D"><span class="toc-text">模式三 Http请求获取会话</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8E%E8%AE%B0"><span class="toc-text">后记</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-text">参考资料</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SSO%E5%BC%80%E6%BA%90%E6%A1%86%E6%9E%B6"><span class="toc-text">SSO开源框架</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-CAS-Central-Authentication-Service"><span class="toc-text">1. CAS (Central Authentication Service)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Keycloak"><span class="toc-text">2. Keycloak</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Apache-Shiro"><span class="toc-text">3. Apache Shiro</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-Spring-Security-OAuth2%EF%BC%88%E5%B7%B2%E5%BD%92%E6%A1%A3%EF%BC%8C%E4%BD%86%E4%BB%8D%E6%9C%89%E5%8F%82%E8%80%83%E4%BB%B7%E5%80%BC%EF%BC%89"><span class="toc-text">4. Spring Security OAuth2（已归档，但仍有参考价值）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-Sa-Token%EF%BC%88%E5%9B%BD%E4%BA%A7%E8%BD%BB%E9%87%8F%E7%BA%A7%E6%A1%86%E6%9E%B6%EF%BC%89"><span class="toc-text">5. Sa-Token（国产轻量级框架）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-JustAuth%EF%BC%88%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E6%95%B4%E5%90%88%EF%BC%89"><span class="toc-text">6. JustAuth（第三方登录整合）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%A6%E4%B9%A0%E5%BB%BA%E8%AE%AE"><span class="toc-text">学习建议</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/cn/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%EF%BC%88SSO%EF%BC%89/" title="具体理解单点登录"><img src="https://s2.loli.net/2024/07/02/nWEDQUVbCFgLq34.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="具体理解单点登录"/></a><div class="content"><a class="title" href="/cn/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%EF%BC%88SSO%EF%BC%89/" title="具体理解单点登录">具体理解单点登录</a><time datetime="2025-02-13T16:00:00.000Z" title="发表于 2025-02-14 00:00:00">2025-02-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/cn/Redis%E7%BC%93%E5%AD%98/" title="Redis三大缓存问题"><img src="https://s2.loli.net/2024/07/02/nWEDQUVbCFgLq34.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Redis三大缓存问题"/></a><div class="content"><a class="title" href="/cn/Redis%E7%BC%93%E5%AD%98/" title="Redis三大缓存问题">Redis三大缓存问题</a><time datetime="2024-08-23T16:00:00.000Z" title="发表于 2024-08-24 00:00:00">2024-08-24</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/cn/DockerHub%E5%8A%A0%E9%80%9F/" title="DockerHub加速拉取镜像"><img src="https://s2.loli.net/2024/08/16/sTDEg6G7wIq4NUR.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="DockerHub加速拉取镜像"/></a><div class="content"><a class="title" href="/cn/DockerHub%E5%8A%A0%E9%80%9F/" title="DockerHub加速拉取镜像">DockerHub加速拉取镜像</a><time datetime="2024-08-15T16:00:00.000Z" title="发表于 2024-08-16 00:00:00">2024-08-16</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/cn/%E5%AA%92%E8%B5%84%E7%AE%A1%E7%90%86/" title="媒体资源管理"><img src="https://s2.loli.net/2024/08/06/1E2xrPScnl5CqZz.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="媒体资源管理"/></a><div class="content"><a class="title" href="/cn/%E5%AA%92%E8%B5%84%E7%AE%A1%E7%90%86/" title="媒体资源管理">媒体资源管理</a><time datetime="2024-08-04T16:00:00.000Z" title="发表于 2024-08-05 00:00:00">2024-08-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/cn/JSR303/" title="JSR-303规范"><img src="https://s2.loli.net/2024/08/04/gBs3UfKTWd8Hxw5.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="JSR-303规范"/></a><div class="content"><a class="title" href="/cn/JSR303/" title="JSR-303规范">JSR-303规范</a><time datetime="2024-08-03T16:00:00.000Z" title="发表于 2024-08-04 00:00:00">2024-08-04</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2025 By 炽热の秋冬</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.8.8/dist/lazyload.iife.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (true){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"></div><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/click-heart.min.js" async="async" mobile="true"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
